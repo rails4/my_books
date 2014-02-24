@@ -84,7 +84,6 @@ class Book < ActiveRecord::Base
 
   attr_accessible :author, :isbn, :price_pln, :title, :tag_list,
     :cover, :remove_cover, :cover_cache, :remote_cover_url,  # NEW attributes
-    :crop_x, :crop_y, :crop_w, :crop_h                       # NEW (Jcrop)
 end
 ```
 
@@ -93,7 +92,10 @@ Dopisujemy w atrybuty do *params* w kontrolerze *BooksController*:
 ```ruby
 # Never trust parameters from the scary internet, only allow the white list through.
 def book_params
-  params.require(:book).permit(:author, :title, :isbn, :price, :cover)
+  params.require(:book).permit(:author, :title, :isbn, :price,
+      :cover, :remove_cover, :cover_cache, :remote_cover_url)
+
+#  :crop_x, :crop_y, :crop_w, :crop_h  # for Jcrop
 end
 ```
 
