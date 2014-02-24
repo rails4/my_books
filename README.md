@@ -182,7 +182,7 @@ Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
 <% end %>
 ```
 
-*show.html.erb* (TODO: dopisać jakiś CSS):
+*show.html.erb*:
 
 ```rhtml
 <div class="cover">
@@ -190,7 +190,20 @@ Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
 </div>
 ```
 
-*index.html.erb*:
+*TODO:* dodać CSS dla elementu *div.cover*.
+
+
+## Strona główna aplikacji
+
+W *config/routes.rb* ustawiamy *root url* aplikacji:
+
+```ruby
+MyBooks::Application.routes.draw do
+  resources :books
+  root 'books#index'
+```
+
+**TODO:** Skorzystać z Isotope lub Masonry w *index.html.erb*:
 
 ```rhtml
 <% @books.each do |book| %>
@@ -202,7 +215,7 @@ Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
       <%= link_to t('.show', :default => t("helpers.links.show")), book_path(book), :class => 'btn btn-mini' %>
 ```
 
-# Jcrop
+## TODO: Jcrop
 
 * [Jcrop](http://deepliquid.com/content/Jcrop.html),
 * [źródło](https://github.com/tapmodo/Jcrop) (Github)

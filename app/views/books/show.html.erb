@@ -1,5 +1,9 @@
 <p id="notice"><%= notice %></p>
 
+<div class="cover">
+  <%= image_tag @book.cover_url if @book.cover? %>
+</div>
+
 <p>
   <strong>Author:</strong>
   <%= @book.author %>
