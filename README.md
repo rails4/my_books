@@ -165,7 +165,7 @@ Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
   <div class="form-inputs">
     <%= f.input :cover, label: "Upload local file", as: :file%>
     <%= f.hidden_field :cover_cache %>
-    <%= f.input :remote_cover_url, label: "or input URL", as: :file %>
+    <%= f.input :remote_cover_url, label: "or input URL" %>
     <% unless @book.new_record? %>
       <%= f.input :remove_cover, label: "remove cover", as: :boolean %>
     <% end %>
