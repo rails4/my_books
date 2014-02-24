@@ -17,6 +17,10 @@ Linki do dokumentacji Carrierwave:
   RailsCasts \#182
 * [Carrierwave, Rails 4, and Multiple Uploads](http://stackoverflow.com/questions/19712816/carrierwave-rails-4-and-multiple-uploads)
 
+Simple Form:
+
+* [README](https://github.com/plataformatec/simple_form)
+
 
 ## Carrierwave na konsoli
 
@@ -25,6 +29,7 @@ Dopisujemy do *Gemfile*:
 ```ruby
 gem 'rmagick', '~> 2.13.2'
 gem 'carrierwave', '~> 0.9.0'
+gem 'simple_form', '~> 3.0.1'
 ```
 
 i instalujemy oba gemy wykonując:
@@ -106,9 +111,9 @@ b = Book.new
 b.title = "Octocat Story"
 b.cover = File.open 'public/kimonotocat.jpg'
 b.save!
-b.cover.url           #=> "/uploads/book/cover/5/300x300.jpg"
-b.cover.current_path  #=> "~/tmp/library/public/uploads/book/cover/5/300x300.jpg"
-b.cover.identifier    #=> "300x300.jpg"
+b.cover.url           #=> "/uploads/book/cover/1/kimonotocat.jpg"
+b.cover.current_path  #=> ".../public/uploads/book/cover/1/kimonotocat.jpg
+b.cover.identifier    #=> "kimonotocat.jpg"
 ```
 
 Fix white list:
@@ -144,7 +149,7 @@ Dokumentacja [CarrierWave::RMagick](http://rdoc.info/github/jnicklas/carrierwave
   - [resize_to_fit](http://www.imagemagick.org/RMagick/doc/image3.html#resize_to_fit)
 
 
-## Rails 3
+## Rails 4
 
 Poprawiamy szablony. Zaczynamy od szablonu *_form.html.erb*
 (korzystamy z gemu *simple_form*):
