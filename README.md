@@ -3,19 +3,6 @@
 Przykładowa aplikacja korzystająca z gemu *carrierwave* oraz
 biblioteki JavaScript Masonry/Isotope.
 
-Dopisujemy do *Gemfile*:
-
-```ruby
-gem 'rmagick', '~> 2.13.2'
-gem 'carrierwave', '~> 0.9.0'
-```
-
-i instalujemy nowe gemy wykonując:
-
-```sh
-bundle install
-```
-
 Linki do dokumentacji Carrierwave:
 
 * [home](https://github.com/jnicklas/carrierwave) –
@@ -28,11 +15,57 @@ Linki do dokumentacji Carrierwave:
   [Mongoid](http://mongoid.org/en/mongoid/index.html) support for CarrierWave
 * [cropping images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
   RailsCasts \#182
+* [Carrierwave, Rails 4, and Multiple Uploads](http://stackoverflow.com/questions/19712816/carrierwave-rails-4-and-multiple-uploads)
 
-Kilka okładek pobrałem z [Biblioteki UŚ i UE Katowice](http://opac.ciniba.edu.pl).
+
+## Carrierwave na konsoli
+
+Dopisujemy do *Gemfile*:
+
+```ruby
+gem 'rmagick', '~> 2.13.2'
+gem 'carrierwave', '~> 0.9.0'
+```
+
+i instalujemy oba gemy wykonując:
+
+```sh
+bundle install
+```
+
+Kilka okładek pobrałem z [Surrealistyczne okładki książek Daniela Mroza](http://booklips.pl/galeria/surrealistyczne-okladki-ksiazek-daniela-mroza/),
+z [Galerii okładek](http://home.agh.edu.pl/~evermind/okladki/galeria_okladek.htm)
+i [GitHub Octodex](http://octodex.github.com/). Obrazki zapisałem w katalogu *public*:
+
+* Stanisław Jerzy Lec, Myśli nieuczesane. Wydawnictwo Literackie
+* Stanisław Lem, Cyberiada. Wydawnictwo Literackie
+* John Ronald Reuel Tolkien, Hobbit. Wydawnictwo Iskry
+* John Ronald Reuel Tolkien, Rudy Dżil i jego pies. Wydawnictwo Amber
+* The Kimonoctocat
+
+Jak to działa? Na konsoli Rails wykonujemy kolejno:
+
+```ruby
+class MyUploader < CarrierWave::Uploader::Base
+  storage :file
+end
+file = File.open('public/lem-cyberiada.jpg')
+uploader = MyUploader.new
+uploader.store! file
+```
+
+Jeśli nie było błędów, to w katalogu *public/uploads/* powinna się
+pojawić kopia pliku *lem-cyberiada.jpg*.
 
 
-## Zaczynamy
+## Scaffolding
+
+Generujemy szablon CRUD dla modelu *Book*:
+
+```sh
+rails generate scaffold Book author title isbn price:integer
+rake db:migrate
+```
 
 Generujemy uploader:
 
@@ -43,7 +76,7 @@ rails g migration add_cover_to_books cover:string
 rake db:migrate
 ```
 
-Dopisujemy uploader do modelu:
+Dopisujemy uploader do modelu *Book*:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -55,7 +88,16 @@ class Book < ActiveRecord::Base
 end
 ```
 
-Konsola Rails:
+Dopisujemy w atrybuty do *params* w kontrolerze *BooksController*:
+
+```ruby
+# Never trust parameters from the scary internet, only allow the white list through.
+def book_params
+  params.require(:book).permit(:author, :title, :isbn, :price, :cover)
+end
+```
+
+Teraz możemy sprawdzić na konsola Rails, czy to działa:
 
 ```ruby
 b = Book.new
