@@ -20,6 +20,7 @@ end
 
 gem 'rmagick', '~> 2.13.2'
 gem 'carrierwave', '~> 0.9.0'
+gem 'simple_form', '~> 3.0.1'
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]

@@ -36,6 +36,7 @@ i instalujemy oba gemy wykonując:
 
 ```sh
 bundle install
+rails generate simple_form:install
 ```
 
 Kilka okładek pobrałem z [Surrealistyczne okładki książek Daniela Mroza](http://booklips.pl/galeria/surrealistyczne-okladki-ksiazek-daniela-mroza/),
