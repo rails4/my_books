@@ -99,12 +99,12 @@ def book_params
 end
 ```
 
-Teraz możemy sprawdzić na konsola Rails, czy to działa:
+Teraz możemy sprawdzić na konsoli Rails, czy nie zrobiliśmy jakiś błędów:
 
 ```ruby
 b = Book.new
 b.title = "Octocat Story"
-b.cover = File.open('public/kimonoctat.jpg')
+b.cover = File.open 'public/kimonotocat.jpg'
 b.save!
 b.cover.url           #=> "/uploads/book/cover/5/300x300.jpg"
 b.cover.current_path  #=> "~/tmp/library/public/uploads/book/cover/5/300x300.jpg"
