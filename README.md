@@ -206,6 +206,8 @@ MyBooks::Application.routes.draw do
 **TODO:** Skorzystać z Isotope lub Masonry w *index.html.erb*:
 
 ```rhtml
+<h1>moje książki</h1>
+
 <% @books.each do |book| %>
    <tr>
      <td><%= image_tag(book.cover_url(:thumb)) if book.cover? %></td>
