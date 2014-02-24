@@ -5,12 +5,16 @@ biblioteki JavaScript Masonry/Isotope.
 
 Dopisujemy do *Gemfile*:
 
-    gem 'rmagick', '~> 2.13.2'
-    gem 'carrierwave', '~> 0.9.0'
+```ruby
+gem 'rmagick', '~> 2.13.2'
+gem 'carrierwave', '~> 0.9.0'
+```
 
 i instalujemy nowe gemy wykonując:
 
-    bundle install
+```sh
+bundle install
+```
 
 Linki do dokumentacji Carrierwave:
 
@@ -32,10 +36,12 @@ Kilka okładek pobrałem z [Biblioteki UŚ i UE Katowice](http://opac.ciniba.ed
 
 Generujemy uploader:
 
-    rails g uploader Cover
-      create  app/uploaders/cover_uploader.rb
-    rails g migration add_cover_to_books cover:string
-    rake db:migrate
+```sh
+rails g uploader Cover
+  create  app/uploaders/cover_uploader.rb
+rails g migration add_cover_to_books cover:string
+rake db:migrate
+```
 
 Dopisujemy uploader do modelu:
 
