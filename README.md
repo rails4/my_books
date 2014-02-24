@@ -1,19 +1,18 @@
 ## Moje książki
 
-Przykładowa aplikacja korzystająca z gemu
-*carrierwave* oraz biblioteki JavaScript
-Masonry/Isotope.
+Przykładowa aplikacja korzystająca z gemu *carrierwave* oraz
+biblioteki JavaScript Masonry/Isotope.
 
 Dopisujemy do *Gemfile*:
 
-    gem 'rmagick', '~> 2.13.1'
-    gem 'carrierwave', '~> 0.7.0'
+    gem 'rmagick', '~> 2.13.2'
+    gem 'carrierwave', '~> 0.9.0'
 
 i instalujemy nowe gemy wykonując:
 
     bundle install
 
-Dokumentacja:
+Linki do dokumentacji Carrierwave:
 
 * [home](https://github.com/jnicklas/carrierwave) –
   classier solution for file uploads for Rails,
@@ -26,7 +25,7 @@ Dokumentacja:
 * [cropping images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
   RailsCasts \#182
 
-Kilka okładki książek pobrałem z [Biblioteki UŚ i UE Katowice](http://opac.ciniba.edu.pl).
+Kilka okładek pobrałem z [Biblioteki UŚ i UE Katowice](http://opac.ciniba.edu.pl).
 
 
 ## Zaczynamy
