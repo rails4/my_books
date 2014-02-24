@@ -87,20 +87,16 @@ Dopisujemy uploader do modelu *Book*:
 ```ruby
 class Book < ActiveRecord::Base
   mount_uploader :cover, CoverUploader
-
-  attr_accessible :author, :isbn, :price_pln, :title, :tag_list,
-    :cover, :remove_cover, :cover_cache, :remote_cover_url,  # NEW attributes
 end
 ```
 
-Dopisujemy w atrybuty do *params* w kontrolerze *BooksController*:
+Dopisujemy atrybuty w metodzie *book_params* w kontrolerze *BooksController*:
 
 ```ruby
 # Never trust parameters from the scary internet, only allow the white list through.
 def book_params
   params.require(:book).permit(:author, :title, :isbn, :price,
       :cover, :remove_cover, :cover_cache, :remote_cover_url)
-
 #  :crop_x, :crop_y, :crop_w, :crop_h  # for Jcrop
 end
 ```
@@ -152,22 +148,38 @@ Dokumentacja [CarrierWave::RMagick](http://rdoc.info/github/jnicklas/carrierwave
 
 ## Rails 4
 
-Poprawiamy szablony. Zaczynamy od szablonu *_form.html.erb*
-(korzystamy z gemu *simple_form*):
+Poprawiamy szablony.
+
+Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
 
 ```rhtml
-<%= simple_form_for @book, :html => { :class => 'form-horizontal' } do |f| %>
-  ...
+<%= simple_form_for(@book) do |f| %>
+  <%= f.error_notification %>
   <div class="control-group string optional">
-    <div class="controls"><%= image_tag(@book.cover_url(:thumb)) if @book.cover? %></div>
+    <div class="controls">
+    <% if @book.cover? %>
+      <%= image_tag @book.cover_url(:thumb) %>
+    <% end %>
+    </div>
   </div>
-  <% unless @book.new_record? %>
-    <%= f.input :remove_cover, :label => "remove cover", as: :boolean %>
-  <% end %>
-  <%= f.input :cover, :label => "Upload local file" %>
-  <%= f.hidden_field :cover_cache %>
-  <%= f.input :remote_cover_url, :label => "or input URL" %>
-  ...
+  <div class="form-inputs">
+    <%= f.input :cover, label: "Upload local file", as: :file%>
+    <%= f.hidden_field :cover_cache %>
+    <%= f.input :remote_cover_url, label: "or input URL", as: :file %>
+    <% unless @book.new_record? %>
+      <%= f.input :remove_cover, label: "remove cover", as: :boolean %>
+    <% end %>
+  </div>
+  <div class="form-inputs">
+    <%= f.input :author %>
+    <%= f.input :title %>
+    <%= f.input :isbn %>
+    <%= f.input :price %>
+  </div>
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>
 ```
 
 *show.html.erb* (TODO: dopisać jakiś CSS):
