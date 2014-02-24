@@ -104,7 +104,7 @@ Teraz możemy sprawdzić na konsola Rails, czy to działa:
 ```ruby
 b = Book.new
 b.title = "Octocat Story"
-b.cover = File.open('doc/300x300.jpg')
+b.cover = File.open('public/kimonoctat.jpg')
 b.save!
 b.cover.url           #=> "/uploads/book/cover/5/300x300.jpg"
 b.cover.current_path  #=> "~/tmp/library/public/uploads/book/cover/5/300x300.jpg"
