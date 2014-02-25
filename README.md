@@ -5,19 +5,14 @@ i *SimpleForm* oraz biblioteki JavaScript *Isotope*.
 
 Linki do dokumentacji Carrierwave:
 
-* [home](https://github.com/jnicklas/carrierwave) –
+* [Home](https://github.com/jnicklas/carrierwave) –
   classier solution for file uploads for Rails,
   Sinatra and other Ruby web frameworks
-* [wiki](https://github.com/jnicklas/carrierwave/wiki)
-* [application](https://github.com/jnicklas/carrierwave-example-app/blob/master/app/views/users/_form.html.erb) –
-  an example
-* [carrierwave-mongoid](https://github.com/jnicklas/carrierwave-mongoid) –
-  [Mongoid](http://mongoid.org/en/mongoid/index.html) support for CarrierWave
-* [cropping images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
+* [Wiki](https://github.com/jnicklas/carrierwave/wiki)
+* [Cropping Images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
   RailsCasts \#182
-* [Carrierwave, Rails 4, and Multiple Uploads](http://stackoverflow.com/questions/19712816/carrierwave-rails-4-and-multiple-uploads)
 
-Simple Form:
+*Simple Form*:
 
 * [README](https://github.com/plataformatec/simple_form)
 
@@ -51,7 +46,7 @@ i [GitHub Octodex](http://octodex.github.com/). Obrazki zapisałem w katalogu *
 * John Ronald Reuel Tolkien, Rudy Dżil i jego pies. Wydawnictwo Amber
 * The Kimonoctocat
 
-Jak to działa? Na konsoli Rails wykonujemy kolejno:
+Jak działa Carrierwave? Na konsoli Rails wykonujemy kolejno:
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
@@ -75,7 +70,8 @@ rails generate scaffold Book author title isbn price:integer
 rake db:migrate
 ```
 
-Generujemy uploader:
+Generujemy uploader dla atrybutu *cover*, który dodajemy
+via *migration* do modelu *Book*:
 
 ```sh
 rails g uploader Cover
@@ -84,7 +80,7 @@ rails g migration add_cover_to_books cover:string
 rake db:migrate
 ```
 
-Dopisujemy uploader do modelu *Book*:
+Wygenerowany uploader dopisujemy do modelu *Book*:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -92,18 +88,18 @@ class Book < ActiveRecord::Base
 end
 ```
 
-Dopisujemy atrybuty w metodzie *book_params* w kontrolerze *BooksController*:
+Dodatkowe atrybuty, z których będziemy korzystać dopisujemy w metodzie
+*book_params* w kontrolerze *BooksController*:
 
 ```ruby
 # Never trust parameters from the scary internet, only allow the white list through.
 def book_params
   params.require(:book).permit(:author, :title, :isbn, :price,
       :cover, :remove_cover, :cover_cache, :remote_cover_url)
-#  :crop_x, :crop_y, :crop_w, :crop_h  # for Jcrop
 end
 ```
 
-Teraz możemy sprawdzić na konsoli Rails, czy nie zrobiliśmy jakiś błędów:
+Teraz sprawdzimy na konsoli Rails, czy nie zrobiliśmy jakiś błędów:
 
 ```ruby
 b = Book.new
@@ -115,7 +111,7 @@ b.cover.current_path  #=> ".../public/uploads/book/cover/1/kimonotocat.jpg
 b.cover.identifier    #=> "kimonotocat.jpg"
 ```
 
-Fix white list:
+Na koniec odkomentowujemy w *cover_uploader.rb* metodę *extension_white_list*:
 
 ```ruby
 class CoverUploader < CarrierWave::Uploader::Base
@@ -125,7 +121,7 @@ class CoverUploader < CarrierWave::Uploader::Base
 end
 ```
 
-Różne wielkości obrazków:
+I dodajemy dwie wersje obrazków:
 
 ```ruby
 class CoverUploader < CarrierWave::Uploader::Base
@@ -150,9 +146,10 @@ Dokumentacja [CarrierWave::RMagick](http://rdoc.info/github/jnicklas/carrierwave
 
 ## Rails 4
 
-Poprawiamy szablony.
+Zaczynamy od poprawianie szablonów.
 
-Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
+Na początek szablon częściowy *_form.html.erb*,
+w którym skorzystamy z gemu *simple_form*:
 
 ```rhtml
 <%= simple_form_for(@book) do |f| %>
@@ -184,15 +181,14 @@ Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
 <% end %>
 ```
 
-*show.html.erb*:
+W widoku *show.html.erb* dodajemy okładkę
 
 ```rhtml
+<p id="notice"><%= notice %></p>
 <div class="cover">
   <%= image_tag @book.cover_url if @book.cover? %>
 </div>
 ```
-
-*TODO:* dodać CSS dla elementu *div.cover*.
 
 
 ## Strona główna aplikacji
