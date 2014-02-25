@@ -24,5 +24,7 @@ gem 'simple_form', '~> 3.0.1'
 
 gem 'jcrop-rails-v2', '~> 0.9.12.3'
 
+gem 'quiet_assets', '~> 1.0.2'
+
 # Use debugger
 # gem 'debugger', group: [:development, :test]

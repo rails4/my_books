@@ -1,9 +1,8 @@
 class BooksController < ApplicationController
-  before_action :set_book, only: [:show, :edit, :update, :destroy]
+  before_action :set_book, only: [:show, :edit, :update, :destroy, :crop]
 
   # GET /books/1/crop
   def crop
-    @book = Book.find(params[:id])
   end
 
   # GET /books

@@ -27,9 +27,11 @@ Simple Form:
 Dopisujemy do *Gemfile*:
 
 ```ruby
-gem 'rmagick', '~> 2.13.2'
-gem 'carrierwave', '~> 0.9.0'
-gem 'simple_form', '~> 3.0.1'
+gem 'rmagick',      '~> 2.13.2'
+gem 'carrierwave',  '~> 0.9.0'
+gem 'simple_form',  '~> 3.0.1'
+
+gem 'quiet_assets', '~> 1.0.2'
 ```
 
 i instalujemy oba gemy wykonując:
@@ -214,7 +216,9 @@ Bibliotekę dopisujemy do pliku *app/assets/javascripts/application.js*
 ```js
 //= require jquery
 //= require jquery_ujs
+//= require jquery.Jcrop
 //= require isotope.pkgd.min
+//= require books
 //= require turbolinks
 ```
 
@@ -222,17 +226,9 @@ Usuwamy też *require_tree* z pliku *app/assets/stylesheets/application.css*
 i dopisujemy *scaffold*:
 
 ```css
- *= require scaffold
+ *= require books
+ *= require scaffolds
  *= require_self
-```
-
-Ponieważ z biblioteki będziemy korzystać tylko via *BooksController*
-pliki z kodem dostosowującym Isotope do strony z listą książek,
-dopisujemy do layoutu aplikacji *app/views/layouts/application.html.erb*:
-
-```rhtml
-<%= stylesheet_link_tag params[:controller] %>
-<%= javascript_include_tag params[:controller] %>
 ```
 
 W samouczku [The Asset Pipeline](http://edgeguides.rubyonrails.org/asset_pipeline.html)
@@ -320,12 +316,19 @@ Widok *crop.html.erb*:
 
 ```rhtml
 <h1>Crop Cover</h1>
-<%= image_tag @book.cover_url, id: 'jcrop_target' %>
 
+<%= image_tag @book.cover_url, id: "jcrop_target" %>
+
+<%= simple_form_for @book, html: { id: "coords" } do |f| %>
+<% %w[x y w h].each do |attr| %>
+  <%= f.input "crop_#{attr}" %>
+<% end %>
+  <div class="form-actions">
+    <%= f.submit "Crop" %>
+  </div>
+<% end %>
 <p>
-  <%= link_to 'Show', @book %> |
-  <%= link_to 'Back', books_path %>
-</p>
+<%= link_to 'Show', @book %> | <%= link_to 'Back', books_path %></p>
 
 <%= javascript_include_tag 'crop' %>
 ```
@@ -347,7 +350,6 @@ metodę *crop*:
 class BooksController < ApplicationController
   # GET /books/1/crop
   def crop
-    @book = Book.find(params[:id])
   end
 ```
 
@@ -387,20 +389,6 @@ def book_params
 end
 ```
 
-Do widoku *crop.html.erb* dodajemy ukryte atrybuty:
-
-```rhtml
-<%= image_tag @book.cover_url, id: "cropbox" %>
-<%= simple_form_for @book, html: { id: "coords", class: "coords form-horizontal" } do |f| %>
-<% %w[x y w h].each do |attr| %>
-  <%= f.input "crop_#{attr}", as: :hidden %>
-<% end %>
-  <div class="form-actions">
-    <%= f.button :submit, t("helpers.links.crop"), class: "btn-primary" %>
-  </div>
-<% end %>
-```
-
 Atrybuty te dopisujmey w pliku *book.rb*:
 
 ```ruby
@@ -416,49 +404,15 @@ end
 ```
 
 Przy okazji po przycięciu układki uaktualniamy obrazki.
-
-
-*crop.js*:
-
-```js
-jQuery(function() {
-  $('#cropbox').Jcrop({
-    onChange: showCoords,
-    onSelect: showCoords,
-    onRelease: clearCoords,
-
-    aspectRatio: 1,
-    // http://deepliquid.com/content/Jcrop_Sizing_Issues.html
-    boxWidth: 400,
-    boxHeight: 400
-  });
-});
-
-function showCoords(c) {
-  $('#book_crop_x').val(c.x);
-  $('#book_crop_y').val(c.y);
-  // $('#x2').val(c.x2);
-  // $('#y2').val(c.y2);
-  $('#book_crop_w').val(c.w);
-  $('#book_crop_h').val(c.h);
-};
-
-function clearCoords() {
-  $('#coords .controls').val('');
-};
-```
-
 Dodajemy „przycinanie” do kodu *cover_uploader.rb*:
 
 ```ruby
 class CoverUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
 
-  process :resize_to_fit => [400, 400]
-
   version :thumb do
     process :crop
-    process :resize_to_fill => [60,60]
+    process :resize_to_fit => [200, 400]
   end
 
   def crop
@@ -474,7 +428,47 @@ class CoverUploader < CarrierWave::Uploader::Base
   end
 ```
 
-Przerabiamy wszystkie obrazki wczytane przez Carrierwave:
+Do widoku *crop.html.erb* dodajemy formularz z ukrytymi
+atrybutami *crop_{x,y,w,h}*:
+
+```rhtml
+<%= image_tag @book.cover_url, id: "jcrop_target" %>
+<%= simple_form_for @book, html: { id: "coords" } do |f| %>
+<% %w[x y w h].each do |attr| %>
+  <%= f.input "crop_#{attr}", as: :hidden %>
+<% end %>
+  <div class="form-actions">
+    <%= f.sumbit "Crop" %>
+  </div>
+<% end %>
+```
+
+Poprawiamy kod w *crop.js*:
+
+```js
+(function() {
+  $('#jcrop_target').Jcrop({
+    onChange: showCoords,
+    onSelect: showCoords,
+    minSize: [200, 200],
+    onRelease: clearCoords,
+    // http://deepliquid.com/content/Jcrop_Sizing_Issues.html
+    boxWidth: 400,
+    boxHeight: 400
+  });
+  function showCoords(c) {
+    $('#book_crop_x').val(c.x);
+    $('#book_crop_y').val(c.y);
+    $('#book_crop_w').val(c.w);
+    $('#book_crop_h').val(c.h);
+  };
+  function clearCoords() {
+    $('#coords input').val('');
+  };
+})();
+```
+
+Na koniec przerabiamy wszystkie obrazki wczytane przez Carrierwave:
 
 ```ruby
 Book.all.each do |book|
@@ -482,7 +476,9 @@ Book.all.each do |book|
 end
 ```
 
-Przycinanie via klikanie na obrazek okładki na stronie **Edit**, *_form.html.erb*:
+**TODO**
+
+Dodajemy link: Przycinanie via klikanie na obrazek okładki na stronie **Edit**, *_form.html.erb*:
 
 ```rhtml
 <div class="controls">
@@ -492,9 +488,8 @@ Przycinanie via klikanie na obrazek okładki na stronie **Edit**, *_form.html.er
 <% end %>
 </div>
 ```
-Po edycji i dodaniu nowej książki przechodzimy na stronę główną, a nie na stronę „Show Book”.
 
-JTZ? Poprawić kod metod `create` i `update` kontrolera.
+KONIEC.
 
 
 ## ISBN API
