@@ -253,8 +253,8 @@ body {
 i do pliku *books.js*:
 
 ```js
-$(document).ready(function() {
-  var addBooksToIsotope = function() {
+(function() {
+  var configureIsotope = function() {
     $('#books-container').isotope({
       itemSelector: '.book',
       layoutMode: 'masonry',
@@ -263,15 +263,15 @@ $(document).ready(function() {
       }
     });
   };
-  addBooksToIsotope();
-  $(document).bind("page:load", addBooksToIsotope);
-});
+  document.addEventListener("DOMContentLoaded", configureIsotope);
+  document.addEventListener("page:load", configureIsotope);
+})();
 ```
 
 *Uwagi:*
 1. Dlaczego to takie skomplikowane?
 Ponieważ Rails korzysta z [Turbolinks](https://github.com/rails/turbolinks).
-Można też skorzystać z gemu [jquery.turbolinks](https://github.com/kossnocorp/jquery.turbolinks).
+Zobacz też [jquery.turbolinks](https://github.com/kossnocorp/jquery.turbolinks).
 2. Usuwamy niepotrzebny plik *books.js.coffee* ([CoffeeScript](http://coffeescript.org/)).
 
 Teraz zajmiemy się widokiem *books/index.html.erb*:

@@ -1,6 +1,5 @@
-$(document).ready(function() {
-
-  var addBooksToIsotope = function() {
+(function() {
+  var configureIsotope = function() {
     $('#books-container').isotope({
       itemSelector: '.book',
       layoutMode: 'masonry',
@@ -9,10 +8,6 @@ $(document).ready(function() {
       }
     });
   };
-
-  addBooksToIsotope();
-  $(document).bind("page:load", addBooksToIsotope);
-
-  // document.addEventListener("page:load", addBooksToIsotope);
-
-});
+  document.addEventListener("DOMContentLoaded", configureIsotope);
+  document.addEventListener("page:load", configureIsotope);
+})();
