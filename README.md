@@ -34,7 +34,7 @@ gem 'simple_form',  '~> 3.0.1'
 gem 'quiet_assets', '~> 1.0.2'
 ```
 
-i instalujemy oba gemy wykonując:
+odinstalowujemy gem *turbolinks* i instalujemy nowe gemy:
 
 ```sh
 bundle install
@@ -219,7 +219,6 @@ Bibliotekę dopisujemy do pliku *app/assets/javascripts/application.js*
 //= require jquery.Jcrop
 //= require isotope.pkgd.min
 //= require books
-//= require turbolinks
 ```
 
 Usuwamy też *require_tree* z pliku *app/assets/stylesheets/application.css*
@@ -260,15 +259,11 @@ i do pliku *books.js*:
     });
   };
   document.addEventListener("DOMContentLoaded", configureIsotope);
-  document.addEventListener("page:load", configureIsotope);
 })();
 ```
 
-*Uwagi:*
-1. Dlaczego to takie skomplikowane?
-Ponieważ Rails korzysta z [Turbolinks](https://github.com/rails/turbolinks).
-Zobacz też [jquery.turbolinks](https://github.com/kossnocorp/jquery.turbolinks).
-2. Usuwamy niepotrzebny plik *books.js.coffee* ([CoffeeScript](http://coffeescript.org/)).
+*Uwaga:* Przy okazji usuwamy niepotrzebny plik
+*books.js.coffee* ([CoffeeScript](http://coffeescript.org/)).
 
 Teraz zajmiemy się widokiem *books/index.html.erb*:
 
@@ -473,7 +468,7 @@ Poprawiamy kod w *crop.js*:
 })();
 ```
 
-Na koniec przerabiamy wszystkie obrazki wczytane przez Carrierwave:
+Na koniec przerabiamy wszystkie stare wersje obrazków:
 
 ```ruby
 Book.all.each do |book|

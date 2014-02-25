@@ -9,7 +9,7 @@
     });
   };
   document.addEventListener("DOMContentLoaded", configureIsotope);
-  document.addEventListener("page:load", configureIsotope);
+  // document.addEventListener("page:load", configureIsotope);
 
   console.log('books.js: Isotope was configured...');
 })();
