@@ -220,7 +220,7 @@ Bibliotekę dopisujemy do pliku *app/assets/javascripts/application.js*
 ```
 
 Usuwamy też *require_tree* z pliku *app/assets/stylesheets/application.css*
-(i dopisujemy *scaffold*):
+i dopisujemy *scaffold*:
 
 ```css
  *= require scaffold
@@ -228,7 +228,7 @@ Usuwamy też *require_tree* z pliku *app/assets/stylesheets/application.css*
 ```
 
 Ponieważ z biblioteki będziemy korzystać tylko via *BooksController*
-pliki z kodem dostosowującym Isotope do książek,
+pliki z kodem dostosowującym Isotope do strony z listą książek,
 dopisujemy do layoutu aplikacji *app/views/layouts/application.html.erb*:
 
 ```rhtml
@@ -293,16 +293,9 @@ Teraz zajmiemy się widokiem *books/index.html.erb*:
   </div>
   <% end %>
 </div>
-
-<% @books.each do |book| %>
-   <tr>
-    ...
-    ...
-    <td>
-      <%= link_to t('.show', :default => t("helpers.links.show")), book_path(book), :class => 'btn btn-mini' %>
 ```
 
-## TODO: Jcrop
+## Jcrop
 
 * [Jcrop](http://deepliquid.com/content/Jcrop.html),
 * [źródło](https://github.com/tapmodo/Jcrop) (Github)
