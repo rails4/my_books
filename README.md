@@ -235,13 +235,14 @@ jest więcej szczegółów na ten temat.
 
 Dopisujemy do pliku *books.css.scss* ([SASS](http://sass-lang.com/)):
 
-```css
+```scss
+$book-background: #F0EAC8;
 body {
   width: 100%;
 }
 .book {
   width: 200px;
-  background-color: #ddd;
+  background-color: $book-background;
   margin-bottom: 20px;
 }
 ```
