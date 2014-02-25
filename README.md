@@ -384,7 +384,7 @@ def book_params
 end
 ```
 
-Atrybuty te dopisujmey też w pliku *book.rb* (tzw. wirtualne atrybuty):
+Atrybuty te dopisujemy też w pliku *book.rb* (tzw. wirtualne atrybuty):
 
 ```ruby
 class Book < ActiveRecord::Base
