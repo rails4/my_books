@@ -339,6 +339,9 @@ metodę *crop*:
 
 ```ruby
 class BooksController < ApplicationController
+  # dodajemy :crop
+  before_action :set_book, only: [:show, :edit, :update, :destroy, :crop]
+
   # GET /books/1/crop
   def crop
   end
@@ -370,7 +373,8 @@ współrzędne zaznaczenia.
 
 ### Dalsze poprawki
 
-W kontrolerze *BooksController.rb* dopisujemy do *book_params*:
+W kontrolerze *BooksController.rb* dopisujemy atrybuty
+*crop_{x,y,w,h}* do *book_params*:
 
 ```ruby
 def book_params
@@ -380,11 +384,12 @@ def book_params
 end
 ```
 
-Atrybuty te dopisujmey w pliku *book.rb*:
+Atrybuty te dopisujmey też w pliku *book.rb* (tzw. wirtualne atrybuty):
 
 ```ruby
 class Book < ActiveRecord::Base
   mount_uploader :cover, CoverUploader
+
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
   after_update :crop_cover
@@ -394,8 +399,9 @@ class Book < ActiveRecord::Base
 end
 ```
 
-Przy okazji po przycięciu układki uaktualniamy obrazki.
-Dodajemy „przycinanie” do kodu *cover_uploader.rb*:
+Przy okazji, po przycięciu układki, uaktualniamy wersje obrazków
+(w naszej aplikacji wersję *thumb*)
+a „przycinanie” obrazków dodajemy do *cover_uploader.rb*:
 
 ```ruby
 class CoverUploader < CarrierWave::Uploader::Base
@@ -419,8 +425,10 @@ class CoverUploader < CarrierWave::Uploader::Base
   end
 ```
 
-Do widoku *crop.html.erb* dodajemy formularz z ukrytymi
-atrybutami *crop_{x,y,w,h}*:
+**Ważne:** Wyjaśnić jak to działa!
+
+Do widoku *crop.html.erb* dodajemy formularz z atrybutami
+*crop_{x,y,w,h}* użytymi w kodzie powyżej:
 
 ```rhtml
 <h1>Crop Cover</h1>
@@ -439,7 +447,9 @@ atrybutami *crop_{x,y,w,h}*:
 <%= javascript_include_tag 'crop' %>
 ```
 
-Poprawiamy kod w *crop.js*:
+Na koniec, zmieniamy kod w wykorzystanym powyżej w widoku *crop.js*.
+Korzystamy ze zdarzeń *onChange* i *onSelect* aby zapisać współrzędne
+w formularzu w elementach *input*:
 
 ```js
 (function() {
@@ -464,7 +474,7 @@ Poprawiamy kod w *crop.js*:
 })();
 ```
 
-Na koniec przerabiamy wszystkie stare wersje obrazków:
+Powinniśmy też na konsoli Rails, przyciąć wszystkie stare wersje obrazków:
 
 ```ruby
 Book.all.each do |book|
@@ -472,16 +482,19 @@ Book.all.each do |book|
 end
 ```
 
-**TODO**
-
-Dodajemy link: Przycinanie via klikanie na obrazek okładki na stronie **Edit**, *_form.html.erb*:
+Kończymy zmiany dodaniem linka 'Crop cover' do widoku *_form.html.erb*:
 
 ```rhtml
-<div class="controls">
-<% if @book.cover %>
-  <%= image_tag @book.cover_url(:thumb) %>
-  <%= link_to t('.crop', default: t("helpers.links.tocrop")), crop_book_path(@book), class: 'btn' %>
-<% end %>
+<div class="form-inputs">
+  <%= f.input :cover, label: "Upload local file", as: :file%>
+  <%= f.hidden_field :cover_cache %>
+  <%= f.input :remote_cover_url, label: "or input URL" %>
+  <% if @book.cover %>
+    <%= link_to 'Crop Cover', crop_book_path(@book) %>
+  <% end %>
+  <% unless @book.new_record? %>
+    <%= f.input :remove_cover, label: "remove cover", as: :boolean %>
+  <% end %>
 </div>
 ```
 

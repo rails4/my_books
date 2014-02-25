@@ -13,6 +13,9 @@
     <%= f.input :cover, label: "Upload local file", as: :file%>
     <%= f.hidden_field :cover_cache %>
     <%= f.input :remote_cover_url, label: "or input URL" %>
+    <% if @book.cover %>
+      <%= link_to 'Crop Cover', crop_book_path(@book) %>
+    <% end %>
     <% unless @book.new_record? %>
       <%= f.input :remove_cover, label: "remove cover", as: :boolean %>
     <% end %>
