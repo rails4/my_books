@@ -1,7 +1,7 @@
 ## Moje książki
 
-Przykładowa aplikacja korzystająca z gemu *carrierwave* oraz
-biblioteki JavaScript Masonry/Isotope.
+Przykładowa aplikacja korzystająca z gemów *Carrierwave*
+i *SimpleForm* oraz biblioteki JavaScript *Isotope*.
 
 Linki do dokumentacji Carrierwave:
 
