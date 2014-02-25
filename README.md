@@ -212,7 +212,6 @@ Bibliotekę dopisujemy do pliku *app/assets/javascripts/application.js*
 ```js
 //= require jquery
 //= require jquery_ujs
-//= require jquery.Jcrop
 //= require isotope.pkgd.min
 //= require books
 ```
