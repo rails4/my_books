@@ -316,21 +316,8 @@ Library::Application.routes.draw do
     end
   end
 ```
-Wygenerowany *cover_uploader.rb*:
 
-```ruby
-class CoverUploader < CarrierWave::Uploader::Base
-  include CarrierWave::RMagick
-
-  process :resize_to_fit => [400, 400]
-
-  version :thumb do
-    process :resize_to_fill => [60,60]
-  end
-```
-
-*books_controller.rb*:
-
+Kontroler *books_controller.rb*:
 
 ```ruby
 class BooksController < ApplicationController
@@ -340,7 +327,7 @@ class BooksController < ApplicationController
   end
 ```
 
-*crop.html.erb*:
+Widok *crop.html.erb*:
 
 ```rhtml
     <h1>Crop Cover</h1>
@@ -349,14 +336,14 @@ class BooksController < ApplicationController
 
 ### Dalsze poprawki
 
-*book.rb*:
+Model *book.rb*:
 
 ```ruby
 class Book < ActiveRecord::Base
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 ```
 
-*crop.html.erb*:
+Widok *crop.html.erb*:
 
 ```rhtml
 <%= image_tag @book.cover_url, id: "cropbox" %>
@@ -470,20 +457,6 @@ Po edycji i dodaniu nowej książki przechodzimy na stronę główną, a nie na 
 JTZ? Poprawić kod metod `create` i `update` kontrolera.
 
 
-# TODO
-
-Jeszcze takie funkcjonalności powinna mieć ta aplikacja…
-
-## AJAX
-
-* [AJAX uploader & Mongoid](https://github.com/huobazi/ajax-upload-with-carrierwave-mongoid)
-
-
-## Rijksmuseum
-
-* [Rijksmuseum](https://www.rijksmuseum.nl/en/)
-
-
 ## ISBN API
 
 Dodać możliwość korzystania z ISBN. Zobacz:
@@ -494,7 +467,8 @@ Dodać możliwość korzystania z ISBN. Zobacz:
 * https://developers.google.com/books/docs/getting-started?hl=pl
 * https://developers.google.com/books/docs/v1/getting_started?hl=pl
 
-## Misc stuff
+
+## Różne rzeczy
 
 Debugging views:
 
@@ -503,7 +477,6 @@ Debugging views:
   <%= debug @book %>
 </div>
 ```
-
 
 
 ## TODO
