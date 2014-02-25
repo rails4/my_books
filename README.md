@@ -506,15 +506,14 @@ KONIEC.
 Dodać możliwość korzystania z ISBN. Zobacz:
 
 * http://stackoverflow.com/questions/1297700/what-is-the-most-complete-free-isbn-api
-* http://pastie.org/589354
-* http://isbndb.com/docs/api/51-books.html
+* http://isbndb.com, http://isbndb.com/api/v2/docs
 * https://developers.google.com/books/docs/getting-started?hl=pl
 * https://developers.google.com/books/docs/v1/getting_started?hl=pl
 
 
-## Różne rzeczy
+## Odpluskwianie kodu
 
-Debugging views:
+1. W widoku dodajemy kod podobny do tego:
 
 ```rhtml
 <div style="clear: both">
