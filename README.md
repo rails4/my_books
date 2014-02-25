@@ -432,15 +432,20 @@ Do widoku *crop.html.erb* dodajemy formularz z ukrytymi
 atrybutami *crop_{x,y,w,h}*:
 
 ```rhtml
+<h1>Crop Cover</h1>
 <%= image_tag @book.cover_url, id: "jcrop_target" %>
+
 <%= simple_form_for @book, html: { id: "coords" } do |f| %>
 <% %w[x y w h].each do |attr| %>
-  <%= f.input "crop_#{attr}", as: :hidden %>
+  <%= f.input "crop_#{attr}" %>
 <% end %>
   <div class="form-actions">
-    <%= f.sumbit "Crop" %>
+    <%= f.submit "Crop" %>
   </div>
 <% end %>
+
+<p><%= link_to 'Show', @book %> | <%= link_to 'Back', books_path %></p>
+<%= javascript_include_tag 'crop' %>
 ```
 
 Poprawiamy kod w *crop.js*:
