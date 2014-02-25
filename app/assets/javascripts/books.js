@@ -11,5 +11,5 @@
   document.addEventListener("DOMContentLoaded", configureIsotope);
   document.addEventListener("page:load", configureIsotope);
 
-  console.log('books.js: Isotope configured...');
+  console.log('books.js: Isotope was configured...');
 })();
