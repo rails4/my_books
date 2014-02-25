@@ -209,50 +209,93 @@ W widoku *index.html.erb* skorzystamy z biblioteki
 Pobieramy plik [isotope.pkgd.min.js](http://isotope.metafizzy.co/beta/isotope.pkgd.min.js)
 i zapisujemy go w katalogu *vendor/assets/javascripts/*.
 
-Ponieważ z Isotope będziemy korzystać tylko via *BooksController*
-dopisujemy do layoutu aplikacji *app/views/layouts/application.html.erb*:
-
-```rhtml
-<%= javascript_include_tag params[:controller] %>
-```
-
-i inicjalizację/customizację Isotope w pliku *books.js*
-(wcześniej musimy usunąć plik *books.js.coffee*):
-
-```js
-$(document).ready(function() {
-var $container = $('#container');
-// init
-$container.isotope({
-  // options
-  itemSelector: '.item',
-  layoutMode: 'fitRows'
-});
-}
-```
-
-Bibliotekę dopisujemy do pliku *app/assets/javascripts/application.js*:
+Bibliotekę dopisujemy do pliku *app/assets/javascripts/application.js*
+(i usuwamy dyrektywę *require_tree*):
 
 ```js
 //= require jquery
 //= require jquery_ujs
 //= require isotope.pkgd.min
 //= require turbolinks
-//= require_tree .
+```
+
+Usuwamy też *require_tree* z pliku *app/assets/stylesheets/application.css*
+(i dopisujemy *scaffold*):
+
+```css
+ *= require scaffold
+ *= require_self
+```
+
+Ponieważ z biblioteki będziemy korzystać tylko via *BooksController*
+pliki z kodem dostosowującym Isotope do książek,
+dopisujemy do layoutu aplikacji *app/views/layouts/application.html.erb*:
+
+```rhtml
+<%= stylesheet_link_tag params[:controller] %>
+<%= javascript_include_tag params[:controller] %>
 ```
 
 W samouczku [The Asset Pipeline](http://edgeguides.rubyonrails.org/asset_pipeline.html)
-jest więcej szczegółów.
+jest więcej szczegółów na ten temat.
 
+Dopisujemy do pliku *books.css.scss* ([SASS](http://sass-lang.com/)):
 
+```css
+body {
+  width: 100%;
+}
+.book {
+  width: 200px;
+  background-color: #ddd;
+  margin-bottom: 20px;
+}
+```
+i do pliku *books.js*:
 
+```js
+$(document).ready(function() {
+  $('#books-container').isotope({
+    itemSelector: '.book',
+    layoutMode: 'masonry',
+    masonry: {
+      gutter: 20
+    }
+  });
+});
+```
+
+*Uwaga:* Usuwamy niepotrzebny plik *books.js.coffee*
+([CoffeeScript](http://coffeescript.org/)).
+
+Teraz zajmiemy się widokiem *books/index.html.erb*:
 
 ```rhtml
-<h1>moje książki</h1>
+<h1>My Books</h1>
+
+<p><%= link_to 'New Book', new_book_path %></p>
+
+<div id="books-container">
+  <% @books.each do |book| %>
+  <div class="book">
+    <%= image_tag(book.cover_url(:thumb)) if book.cover? %>
+
+    <%= book.author %><br>
+    <%= book.title %><br>
+    <%= book.isbn %><br>
+    <%= book.price %><br>
+
+    <div class="book-actions">
+      <%= link_to 'Show', book %>
+      <%= link_to 'Edit', edit_book_path(book) %>
+      <%= link_to 'Destroy', book, method: :delete, data: { confirm: 'Are you sure?' } %>
+    </div>
+  </div>
+  <% end %>
+</div>
 
 <% @books.each do |book| %>
    <tr>
-     <td><%= image_tag(book.cover_url(:thumb)) if book.cover? %></td>
     ...
     ...
     <td>

@@ -1,9 +1,12 @@
 $(document).ready(function() {
 
-  var $container = $('#container');
+  var $container = $('#books-container');
   $container.isotope({
-    itemSelector: '.item',
-    layoutMode: 'fitRows'
+    itemSelector: '.book',
+    layoutMode: 'masonry',
+    masonry: {
+      gutter: 20
+    }
   });
 
-}
+});
