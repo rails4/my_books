@@ -439,7 +439,7 @@ Do widoku *crop.html.erb* dodajemy formularz z atrybutami
   <%= f.input "crop_#{attr}" %>
 <% end %>
   <div class="form-actions">
-    <%= f.submit "Crop" %>
+    <%= f.submit "Crop" %><!-- powinno przekierowywać na stronę główną -->
   </div>
 <% end %>
 
@@ -490,7 +490,7 @@ Kończymy zmiany dodaniem linka 'Crop cover' do widoku *_form.html.erb*:
   <%= f.hidden_field :cover_cache %>
   <%= f.input :remote_cover_url, label: "or input URL" %>
   <% if @book.cover %>
-    <%= link_to 'Crop Cover', crop_book_path(@book) %>
+    <%= link_to 'Crop cover', crop_book_path(@book) %>
   <% end %>
   <% unless @book.new_record? %>
     <%= f.input :remove_cover, label: "remove cover", as: :boolean %>
