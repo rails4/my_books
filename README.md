@@ -268,11 +268,11 @@ $(document).ready(function() {
 });
 ```
 
-*Uwaga:* 1. Dlaczego to takie skomplikowane?
+*Uwagi:*
+1. Dlaczego to takie skomplikowane?
 Ponieważ Rails korzysta z [Turbolinks](https://github.com/rails/turbolinks).
-Można też skorzystać z gemu
-[jquery.turbolinks](https://github.com/kossnocorp/jquery.turbolinks). 2. Usuwamy
-niepotrzebny plik *books.js.coffee* ([CoffeeScript](http://coffeescript.org/)).
+Można też skorzystać z gemu [jquery.turbolinks](https://github.com/kossnocorp/jquery.turbolinks).
+2. Usuwamy niepotrzebny plik *books.js.coffee* ([CoffeeScript](http://coffeescript.org/)).
 
 Teraz zajmiemy się widokiem *books/index.html.erb*:
 
