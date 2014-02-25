@@ -162,7 +162,7 @@ w którym skorzystamy z gemu *simple_form*:
     </div>
   </div>
   <div class="form-inputs">
-    <%= f.input :cover, label: "Upload local file", as: :file%>
+    <%= f.input :cover, label: "Upload local file", as: :file %>
     <%= f.hidden_field :cover_cache %>
     <%= f.input :remote_cover_url, label: "or input URL" %>
     <% unless @book.new_record? %>
@@ -181,7 +181,7 @@ w którym skorzystamy z gemu *simple_form*:
 <% end %>
 ```
 
-W widoku *show.html.erb* dodajemy okładkę
+W widoku *show.html.erb* dodajemy okładkę:
 
 ```rhtml
 <p id="notice"><%= notice %></p>
