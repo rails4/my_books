@@ -210,33 +210,36 @@ Pobieramy plik [isotope.pkgd.min.js](http://isotope.metafizzy.co/beta/isotope.pk
 i zapisujemy go w katalogu *vendor/assets/javascripts/*.
 
 Ponieważ z Isotope będziemy korzystać tylko via *BooksController*
-dopisujemy do layoutu aplikacji:
+dopisujemy do layoutu aplikacji *app/views/layouts/application.html.erb*:
 
-    :::rhtml app/views/layouts/application.html.erb
-    <%= javascript_include_tag params[:controller] %>
+```rhtml
+<%= javascript_include_tag params[:controller] %>
+```
 
 i inicjalizację/customizację Isotope w pliku *books.js*
 (wcześniej musimy usunąć plik *books.js.coffee*):
 
-    :::js books.js
-    $(document).ready(function() {
-    var $container = $('#container');
-    // init
-    $container.isotope({
-      // options
-      itemSelector: '.item',
-      layoutMode: 'fitRows'
-    });
-    }
+```js
+$(document).ready(function() {
+var $container = $('#container');
+// init
+$container.isotope({
+  // options
+  itemSelector: '.item',
+  layoutMode: 'fitRows'
+});
+}
+```
 
-Bibliotekę dopisujemy do pliku *application.js*:
+Bibliotekę dopisujemy do pliku *app/assets/javascripts/application.js*:
 
-    :::js app/assets/javascripts/application.js
-    //= require jquery
-    //= require jquery_ujs
-    //= require isotope.pkgd.min
-    //= require turbolinks
-    //= require_tree .
+```js
+//= require jquery
+//= require jquery_ujs
+//= require isotope.pkgd.min
+//= require turbolinks
+//= require_tree .
+```
 
 W samouczku [The Asset Pipeline](http://edgeguides.rubyonrails.org/asset_pipeline.html)
 jest więcej szczegółów.
