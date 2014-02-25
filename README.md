@@ -132,7 +132,8 @@ class CoverUploader < CarrierWave::Uploader::Base
   process :resize_to_fit => [400, 400]
 
   version :thumb do
-    process :resize_to_fill => [60,60]
+    # process :resize_to_fill => [60,60]
+    process :resize_to_fit => [200, 200]
   end
 end
 ```
@@ -203,7 +204,45 @@ MyBooks::Application.routes.draw do
   root 'books#index'
 ```
 
-**TODO:** Skorzystać z Isotope lub Masonry w *index.html.erb*:
+W widoku *index.html.erb* skorzystamy z biblioteki
+[Isotope](http://isotope.metafizzy.co/beta/).
+Pobieramy plik [isotope.pkgd.min.js](http://isotope.metafizzy.co/beta/isotope.pkgd.min.js)
+i zapisujemy go w katalogu *vendor/assets/javascripts/*.
+
+Ponieważ z Isotope będziemy korzystać tylko via *BooksController*
+dopisujemy do layoutu aplikacji:
+
+    :::rhtml app/views/layouts/application.html.erb
+    <%= javascript_include_tag params[:controller] %>
+
+i inicjalizację/customizację Isotope w pliku *books.js*
+(wcześniej musimy usunąć plik *books.js.coffee*):
+
+    :::js books.js
+    $(document).ready(function() {
+    var $container = $('#container');
+    // init
+    $container.isotope({
+      // options
+      itemSelector: '.item',
+      layoutMode: 'fitRows'
+    });
+    }
+
+Bibliotekę dopisujemy do pliku *application.js*:
+
+    :::js app/assets/javascripts/application.js
+    //= require jquery
+    //= require jquery_ujs
+    //= require isotope.pkgd.min
+    //= require turbolinks
+    //= require_tree .
+
+W samouczku [The Asset Pipeline](http://edgeguides.rubyonrails.org/asset_pipeline.html)
+jest więcej szczegółów.
+
+
+
 
 ```rhtml
 <h1>moje książki</h1>
