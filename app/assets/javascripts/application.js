@@ -13,5 +13,5 @@
 //= require jquery
 //= require jquery_ujs
 //= require isotope.pkgd.min
+//= require jquery.Jcrop
 //= require turbolinks
-//= require_tree .

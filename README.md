@@ -306,44 +306,88 @@ Teraz zajmiemy się widokiem *books/index.html.erb*:
 * [Jcrop](http://deepliquid.com/content/Jcrop.html),
 * [źródło](https://github.com/tapmodo/Jcrop) (Github)
 
-Zmiany w kodzie. Zaczynamy od routingu, *routes.rb*:
+Skorzystamy z gemu *jcrop-rails-v2*:
 
 ```ruby
-Library::Application.routes.draw do
-  resources :books do
-    member do
-      get 'crop'
-    end
-  end
+gem 'jcrop-rails-v2', '~> 0.9.12.3'
 ```
 
-Kontroler *books_controller.rb*:
-
-```ruby
-class BooksController < ApplicationController
-  # GET /books/1/crop
-  def show
-    @book = Book.find(params[:id])
-  end
-```
+Dalej postępujemy tak jak to opisano
+w [README](https://github.com/maxd/jcrop-rails-v2)
+(dopisujemy Jcrop w *application.{css,js}*).
 
 Widok *crop.html.erb*:
 
 ```rhtml
-    <h1>Crop Cover</h1>
-    <%= image_tag @book.cover_url(:large) %>
+<h1>Crop Cover</h1>
+<%= image_tag @book.cover_url, id: 'jcrop_target' %>
+
+<p>
+  <%= link_to 'Show', @book %> |
+  <%= link_to 'Back', books_path %>
+</p>
+
+<%= javascript_include_tag 'crop' %>
 ```
+
+Dopisujemy do routingu w pliku *routes.rb*:
+
+```ruby
+resources :books do
+  member do
+    get 'crop'
+  end
+end
+```
+
+Dopisujemy do kontrolera *books_controller.rb*
+metodę *crop*:
+
+```ruby
+class BooksController < ApplicationController
+  # GET /books/1/crop
+  def crop
+    @book = Book.find(params[:id])
+  end
+```
+
+Sprawdzamy czy ten kod działa. W tym celu uruchuchomimy przykład
+[Hello World!](http://deepliquid.com/projects/Jcrop/demos.php?demo=basic).
+
+Dopisujemy do pliku *crop.js*:
+
+```js
+(function() {
+  $('#jcrop_target').Jcrop({
+    onChange: showCoords,
+    onSelect: showCoords,
+    minSize: [200, 200]
+  });
+  function showCoords(c) {
+    console.log('x:', c.x, ' y:', c.y, 'w:', c.w, ' h:', c.h);
+  };
+})();
+```
+
+I wchodzimy na stronę, np. *localhost:3000/books/1/crop**.
+Po kliknięciu w obrazek i przeciągnięciu myszką, powinnien się pojawić
+zaznaczenie prostokątne, a na konsoli powinny być wypisywane aktualne
+współrzędne zaznaczenia.
+
 
 ### Dalsze poprawki
 
-Model *book.rb*:
+W kontrolerze *BooksController.rb* dopisujemy do *book_params*:
 
 ```ruby
-class Book < ActiveRecord::Base
-  attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
+def book_params
+  params.require(:book).permit(:author, :title, :isbn, :price,
+      :cover, :remove_cover, :cover_cache, :remote_cover_url,
+      :crop_x, :crop_y, :crop_w, :crop_h)
+end
 ```
 
-Widok *crop.html.erb*:
+Do widoku *crop.html.erb* dodajemy ukryte atrybuty:
 
 ```rhtml
 <%= image_tag @book.cover_url, id: "cropbox" %>
@@ -357,19 +401,26 @@ Widok *crop.html.erb*:
 <% end %>
 ```
 
-Tłumaczenie:
+Atrybuty te dopisujmey w pliku *book.rb*:
 
-```yaml
-en:
-  helpers:
-    links:
-      crop: "Crop"
-      tocrop: "click to crop"
+```ruby
+class Book < ActiveRecord::Base
+  mount_uploader :cover, CoverUploader
+  attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
+
+  after_update :crop_cover
+  def crop_cover
+    cover.recreate_versions! if crop_x.present?
+  end
+end
 ```
 
-*application.js*:
+Przy okazji po przycięciu układki uaktualniamy obrazki.
 
-```javascript
+
+*crop.js*:
+
+```js
 jQuery(function() {
   $('#cropbox').Jcrop({
     onChange: showCoords,
@@ -395,17 +446,6 @@ function showCoords(c) {
 function clearCoords() {
   $('#coords .controls').val('');
 };
-```
-
-*book.rb*:
-
-```ruby
-class Book < ActiveRecord::Base
-  after_update :crop_cover
-
-  def crop_cover
-    cover.recreate_versions! if crop_x.present?
-  end
 ```
 
 Dodajemy „przycinanie” do kodu *cover_uploader.rb*:

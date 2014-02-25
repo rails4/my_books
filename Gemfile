@@ -22,5 +22,7 @@ gem 'rmagick', '~> 2.13.2'
 gem 'carrierwave', '~> 0.9.0'
 gem 'simple_form', '~> 3.0.1'
 
+gem 'jcrop-rails-v2', '~> 0.9.12.3'
+
 # Use debugger
 # gem 'debugger', group: [:development, :test]

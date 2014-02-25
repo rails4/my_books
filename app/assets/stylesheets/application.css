@@ -10,5 +10,6 @@
  *
  *= require books
  *= require scaffolds
+ *= require jquery.Jcrop
  *= require_self
  */
