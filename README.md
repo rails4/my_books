@@ -528,7 +528,7 @@ Dodać możliwość korzystania z ISBN. Zobacz:
 
 * Rails version: **4.0.3**
 
-* System dependencies: ImageMagick
+* System dependencies: ImageMagick, SQLite
 
 * Database creation
   ```
