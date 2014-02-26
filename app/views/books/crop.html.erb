@@ -2,12 +2,12 @@
 
 <%= image_tag @book.cover_url, id: "jcrop_target" %>
 
-<%= simple_form_for @book, html: { id: "coords" } do |f| %>
+<%= simple_form_for @book, url: update_crop_book_path(@book), html: { id: "coords" } do |f| %>
 <% %w[x y w h].each do |attr| %>
   <%= f.input "crop_#{attr}" %>
 <% end %>
   <div class="form-actions">
-    <%= f.submit "Crop" %>
+    <%= f.submit "Crop cover" %>
   </div>
 <% end %>
 

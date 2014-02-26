@@ -193,6 +193,10 @@ W widoku *show.html.erb* dodajemy okładkę:
 
 ## Strona główna aplikacji
 
+Na początek warto przeczytać: Elad Ossadon,
+[Isotope - Ruby Hybrid Template Engine for Client Side and Server Side](https://github.com/elado/isotope).
+
+
 W *config/routes.rb* ustawiamy *root url* aplikacji:
 
 ```ruby
@@ -499,6 +503,47 @@ Kończymy zmiany dodaniem linka 'Crop cover' do widoku *_form.html.erb*:
 ```
 
 KONIEC.
+
+
+## TODO: powinno przekierowywać na stronę główną
+
+*config/routes.rb*:
+
+```ruby
+  resources :books do
+    member do
+      get 'crop'
+      patch 'update_crop'
+    end
+  end
+```
+
+Dopisujemy do kodu kontrolera:
+
+```ruby
+class BooksController < ApplicationController
+  before_action :set_book, only: [:show, :edit, :update, :destroy, :crop, :update_crop]
+  # GET /books/1/crop
+  def crop
+  end
+  # PATCH/PUT /books/1/update_crop
+  def update_crop
+    respond_to do |format|
+      if @book.update(book_params)
+        format.html { redirect_to books_url, notice: 'Cover was successfully updated.' }
+      else
+        format.html { render action: 'edit' }
+      end
+    end
+  end
+```
+
+Zmieniamy jeden wiersz w widoku *crop.html.erb*:
+
+```rhtml
+<%= simple_form_for @book, url: update_crop_book_path(@book),
+      html: { id: "coords" } do |f| %>
+```
 
 
 ## ISBN API

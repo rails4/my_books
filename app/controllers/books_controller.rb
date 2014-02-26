@@ -1,8 +1,19 @@
 class BooksController < ApplicationController
-  before_action :set_book, only: [:show, :edit, :update, :destroy, :crop]
+  before_action :set_book, only: [:show, :edit, :update, :destroy, :crop, :update_crop]
 
   # GET /books/1/crop
   def crop
+  end
+
+  # PATCH/PUT /books/1/update_crop
+  def update_crop
+    respond_to do |format|
+      if @book.update(book_params)
+        format.html { redirect_to books_url, notice: 'Cover was successfully updated.' }
+      else
+        format.html { render action: 'edit' }
+      end
+    end
   end
 
   # GET /books
