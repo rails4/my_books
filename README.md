@@ -505,7 +505,7 @@ Kończymy zmiany dodaniem linka 'Crop cover' do widoku *_form.html.erb*:
 KONIEC.
 
 
-## TODO: powinno przekierowywać na stronę główną
+## powinno przekierowywać na stronę główną…
 
 *config/routes.rb*:
 
