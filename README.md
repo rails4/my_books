@@ -212,7 +212,6 @@ Bibliotekę dopisujemy do pliku *app/assets/javascripts/application.js*
 //= require jquery
 //= require jquery_ujs
 //= require isotope.pkgd.min
-//= require books
 ```
 
 Usuwamy też *require_tree* z pliku *app/assets/stylesheets/application.css*
@@ -254,6 +253,7 @@ i do pliku *books.js*:
     });
   };
   document.addEventListener("DOMContentLoaded", configureIsotope);
+  // window.addEventListener("load", configureIsotope);
 })();
 ```
 
@@ -264,19 +264,16 @@ Teraz zajmiemy się widokiem *books/index.html.erb*:
 
 ```rhtml
 <h1>My Books</h1>
-
 <p><%= link_to 'New Book', new_book_path %></p>
 
 <div id="books-container">
   <% @books.each do |book| %>
   <div class="book">
     <%= image_tag(book.cover_url(:thumb)) if book.cover? %>
-
     <%= book.author %><br>
     <%= book.title %><br>
     <%= book.isbn %><br>
     <%= book.price %><br>
-
     <div class="book-actions">
       <%= link_to 'Show', book %>
       <%= link_to 'Edit', edit_book_path(book) %>
@@ -285,6 +282,8 @@ Teraz zajmiemy się widokiem *books/index.html.erb*:
   </div>
   <% end %>
 </div>
+
+<%= javascript_include_tag "books" %>
 ```
 
 ## Jcrop

@@ -14,4 +14,3 @@
 //= require jquery_ujs
 //= require jquery.Jcrop
 //= require isotope.pkgd.min
-//= require books
