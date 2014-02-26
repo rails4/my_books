@@ -190,12 +190,7 @@ W widoku *show.html.erb* dodajemy okładkę:
 </div>
 ```
 
-
 ## Strona główna aplikacji
-
-Na początek warto przeczytać: Elad Ossadon,
-[Isotope - Ruby Hybrid Template Engine for Client Side and Server Side](https://github.com/elado/isotope).
-
 
 W *config/routes.rb* ustawiamy *root url* aplikacji:
 
