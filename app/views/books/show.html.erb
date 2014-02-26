@@ -4,6 +4,12 @@
   <%= image_tag @book.cover_url if @book.cover? %>
 </div>
 
+<div class="form-actions">
+  <% if @book.cover %>
+  <%= link_to 'Crop cover', crop_book_path(@book) %>
+  <% end %>
+</div>
+
 <p>
   <strong>Author:</strong>
   <%= @book.author %>

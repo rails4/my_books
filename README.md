@@ -512,18 +512,17 @@ Book.all.each do |book|
 end
 ```
 
-Kończymy zmiany dodaniem linka 'Crop cover' do widoku *_form.html.erb*:
+Kończymy zmiany dodaniem linka 'Crop cover' do widoku *show.html.erb*:
 
 ```rhtml
-<div class="form-inputs">
-  <%= f.input :cover, label: "Upload local file", as: :file%>
-  <%= f.hidden_field :cover_cache %>
-  <%= f.input :remote_cover_url, label: "or input URL" %>
+<p id="notice"><%= notice %></p>
+<div class="cover">
+  <%= image_tag @book.cover_url if @book.cover? %>
+</div>
+
+<div class="form-actions">
   <% if @book.cover %>
-    <%= link_to 'Crop cover', crop_book_path(@book) %>
-  <% end %>
-  <% unless @book.new_record? %>
-    <%= f.input :remove_cover, label: "remove cover", as: :boolean %>
+  <%= link_to 'Crop cover', crop_book_path(@book) %>
   <% end %>
 </div>
 ```
