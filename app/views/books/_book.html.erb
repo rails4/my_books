@@ -1,0 +1,14 @@
+<div class="book">
+  <%= image_tag(book.cover_url(:thumb)) if book.cover? %>
+
+  <%= book.author %><br>
+  <%= book.title %><br>
+  <%= book.isbn %><br>
+  <%= book.price %><br>
+
+  <div class="book-actions">
+    <%= link_to 'Show', book %>
+    <%= link_to 'Edit', edit_book_path(book) %>
+    <%= link_to 'Destroy', book, method: :delete, data: { confirm: 'Are you sure?' } %>
+  </div>
+</div>
