@@ -267,6 +267,7 @@ Teraz zajmiemy się widokiem *books/index.html.erb*:
 <p><%= link_to 'New Book', new_book_path %></p>
 
 <div id="books-container">
+
   <% @books.each do |book| %>
   <div class="book">
     <%= image_tag(book.cover_url(:thumb)) if book.cover? %>
@@ -285,6 +286,37 @@ Teraz zajmiemy się widokiem *books/index.html.erb*:
 
 <%= javascript_include_tag "books" %>
 ```
+
+### Refaktoryzacja widoku *index.html.erb*
+
+Zastępujemy pętlę w widoku *index.html.erb* szablonem częściowym:
+
+```rhtml
+<h1>My Books</h1>
+<p><%= link_to 'New Book', new_book_path %></p>
+<div id="books-container">
+  <%= render partial: 'book', collection: @books %>
+</div>
+<%= javascript_include_tag "books" %>
+```
+
+Następnie tworzymy nowy widok częściowy *_book.html.erb* o zawartości:
+
+```rhtml
+<div class="book">
+  <%= image_tag(book.cover_url(:thumb)) if book.cover? %>
+  <%= book.author %><br>
+  <%= book.title %><br>
+  <%= book.isbn %><br>
+  <%= book.price %><br>
+  <div class="book-actions">
+    <%= link_to 'Show', book %>
+    <%= link_to 'Edit', edit_book_path(book) %>
+    <%= link_to 'Destroy', book, method: :delete, data: { confirm: 'Are you sure?' } %>
+  </div>
+</div>
+```
+
 
 ## Jcrop
 
