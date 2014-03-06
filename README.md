@@ -594,7 +594,7 @@ Dodać możliwość korzystania z ISBN. Zobacz:
 
 * Ruby version: **2.1.0**, gemset: **my_books**
 
-* Rails version: **4.0.3**
+* Rails version: **4.1.0.rc1**
 
 * System dependencies: ImageMagick, SQLite
 
