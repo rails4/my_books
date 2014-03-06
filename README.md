@@ -40,14 +40,18 @@ rails generate simple_form:install
 ```
 
 Kilka okładek pobrałem z [Surrealistyczne okładki książek Daniela Mroza](http://booklips.pl/galeria/surrealistyczne-okladki-ksiazek-daniela-mroza/),
-z [Galerii okładek](http://home.agh.edu.pl/~evermind/okladki/galeria_okladek.htm)
-i [GitHub Octodex](http://octodex.github.com/). Obrazki zapisałem w katalogu *public*:
+z [Galerii okładek](http://home.agh.edu.pl/~evermind/okladki/galeria_okladek.htm),
+[GitHub Octodex](http://octodex.github.com/),
+i [Sticky Comics](http://www.stickycomics.com/where-did-you-meet/).
+
+Obrazki zapisałem w katalogu *public*:
 
 * Stanisław Jerzy Lec, Myśli nieuczesane. Wydawnictwo Literackie
 * Stanisław Lem, Cyberiada. Wydawnictwo Literackie
 * John Ronald Reuel Tolkien, Hobbit. Wydawnictwo Iskry
 * John Ronald Reuel Tolkien, Rudy Dżil i jego pies. Wydawnictwo Amber
 * The Kimonoctocat
+* Where did you meet?
 
 Jak działa Carrierwave? Na konsoli Rails wykonujemy kolejno:
 
