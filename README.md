@@ -22,14 +22,17 @@ Linki do dokumentacji Carrierwave:
 Dopisujemy do *Gemfile*:
 
 ```ruby
-gem 'rmagick',      '~> 2.13.2'
-gem 'carrierwave',  '~> 0.9.0'
-gem 'simple_form',  '~> 3.0.1'
+gem 'rmagick', '~> 2.13.2'
+gem 'carrierwave', '~> 0.10.0'
 
+gem 'jcrop-rails-v2', '~> 0.9.12.3'
+
+gem 'simple_form', '~> 3.0.1'
 gem 'quiet_assets', '~> 1.0.2'
 ```
 
-odinstalowujemy gem *turbolinks* i instalujemy nowe gemy:
+odinstalowujemy gem *turbolinks*, instalujemy nowy zestaw gemów
+i uruchamiamy generator *simple_form:install*:
 
 ```sh
 bundle install
@@ -323,14 +326,9 @@ Następnie tworzymy nowy widok częściowy *_book.html.erb* o zawartości:
 * [Jcrop](http://deepliquid.com/content/Jcrop.html),
 * [źródło](https://github.com/tapmodo/Jcrop) (Github)
 
-Skorzystamy z gemu *jcrop-rails-v2*:
-
-```ruby
-gem 'jcrop-rails-v2', '~> 0.9.12.3'
-```
-
-Dalej postępujemy tak jak to opisano
-w [README](https://github.com/maxd/jcrop-rails-v2)
+Bibliotekę Jcrop zainstalujemy w aplikacji Rails
+korzystając z gemu *jcrop-rails-v2* oraz opisu
+z [README](https://github.com/maxd/jcrop-rails-v2)
 (dopisujemy Jcrop w *application.{css,js}*).
 
 Widok *crop.html.erb*:
