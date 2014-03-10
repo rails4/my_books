@@ -572,6 +572,145 @@ Zmieniamy jeden wiersz w widoku *crop.html.erb*:
       html: { id: "coords" } do |f| %>
 ```
 
+## Drugi model: loans (wypożyczenia)
+
+Nie będziemy korzystać z generatora *scaffold*. Dlaczego?
+
+*Loan* krok po kroku:
+
+```sh
+rails generate model Loan lender:string returns:date book:references
+      create    db/migrate/20140308184718_create_loans.rb
+      create    app/models/loan.rb
+rake db:migrate
+```
+
+Dopisujemy powiązania między modelami:
+
+```ruby
+belongs_to :book                       # w modelu Loan
+has_many :loans, dependent: :destroy   #          Book
+```
+
+Zamieniamy *resources* routing na zagnieżdżony:
+
+```ruby
+resources :books do
+  resources :loans
+  member do
+    get 'crop'
+    patch 'update_crop'
+  end
+end
+```
+i generujemy kontroler dla wypożyczeń:
+
+```sh
+rails generate controller Loans
+```
+
+Wypożyczenia będziemy dodawać i wypisywać w widoku *articles/show*:
+
+```rhtml
+<h2>Wypożyczenia</h2>
+<% @book.loans.each do |loan| %>
+  <p>
+    <%= loan.lender %>, zwrot do <%= loan.returns %>
+  </p>
+<% end %>
+
+<h3>Nowe wypożyczenie</h3>
+<%= simple_form_for([@book, @book.loans.build]) do |f| %>
+  <div class="form-inputs">
+    <%= f.input :lender %>
+    <%= f.input :returns %>
+  </div>
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>
+
+<%= link_to 'Edit', edit_book_path(@book) %> |
+<%= link_to 'Back', books_path %>
+```
+
+Po kliknięciu w przycisk *submit* jest wykonywana akcja
+*create* kontrolera *LoansController*:
+
+```ruby
+class LoansController < ApplicationController
+  def create
+    @book = Book.find(params[:book_id])
+    @loan = @book.loans.create(loan_params)
+    redirect_to book_path(@book)
+  end
+  def destroy
+    @book = Book.find(params[:book_id])
+    @loan = @book.loans.find(params[:id])
+    @loan.destroy
+    redirect_to book_path(@book)
+  end
+
+  private
+  def loan_params
+    params.require(:loan).permit(:lender, :returns)
+  end
+end
+```
+
+**Uwagi:**
+
+1. Zagnieżdżenie zasobów ⇒ *book_id* + *:id*.
+2. Walidacja jest trikowa! Wyjaśnić dlaczego?
+
+
+### Obowiązkowa refaktoryzacja
+
+Widok zawiera za dużo kodu. W widoku *articles/show*
+wydzielimy dwa widoki częściowe:
+
+```rhtml
+<h2>Wypożyczenia</h2>
+<%= render @book.loans %>
+<h3>Nowe wypożyczenie</h3>
+<%= render "loans/form" %>
+```
+
+*loans/_loan.html.erb*:
+
+```rhtml
+<p>
+  <%= loan.lender %>, zwrot do <%= loan.returns %>
+</p>
+```
+
+i *loans/_form.html.erb*:
+
+```rhtml
+<%= simple_form_for([@book, @book.loans.build]) do |f| %>
+  <div class="form-inputs">
+    <%= f.input :lender %>
+    <%= f.input :returns %>
+  </div>
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>
+```
+
+### Usuwanie wypożyczeń
+
+Dopisujemy link *Usuń wypożyczenie* do widoku
+
+```rhtml
+<p>
+  <%= link_to "Destroy Loan", [loan.book, loan],
+        method: :delete, data: { confirm: "Jesteś pewien?" } %>
+</p>
+```
+Metodę *destroy* do kontrolera *LoansControllers*
+dodaliśmy wcześniej.
+
 
 ## ISBN API
 

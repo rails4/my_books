@@ -30,5 +30,11 @@
   <%= @book.price %>
 </p>
 
+<h2>Wypożyczenia</h2>
+<%= render @book.loans %>
+
+<h3>Nowe wypożyczenie</h3>
+<%= render "loans/form" %>
+
 <%= link_to 'Edit', edit_book_path(@book) %> |
 <%= link_to 'Back', books_path %>
