@@ -1,5 +1,7 @@
 class LoansController < ApplicationController
 
+  # http_basic_authenticate_with name: "admin", password: "sekret", only: :destroy
+
   def create
     @book = Book.find(params[:book_id])
     @loan = @book.loans.create(loan_params)

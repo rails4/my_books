@@ -1,4 +1,7 @@
 class BooksController < ApplicationController
+
+  # http_basic_authenticate_with name: "admin", password: "sekret", except: [:index, :show]
+
   before_action :set_book, only: [:show, :edit, :update, :destroy, :crop, :update_crop]
 
   # GET /books/1/crop

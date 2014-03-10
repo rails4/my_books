@@ -712,6 +712,19 @@ Metodę *destroy* do kontrolera *LoansControllers*
 dodaliśmy wcześniej.
 
 
+## Basic Authentication
+
+Dopisujemy do obu kontrolerów:
+
+```ruby
+class BooksController < ApplicationController
+   http_basic_authenticate_with name: "admin", password: "sekret", except: [:index, :show]
+
+class LoansController < ApplicationController
+   http_basic_authenticate_with name: "admin", password: "sekret", only: :destroy
+```
+
+
 ## ISBN API
 
 Dodać możliwość korzystania z ISBN. Zobacz:
