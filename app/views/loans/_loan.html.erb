@@ -1,0 +1,7 @@
+<p>
+  <%= loan.lender %>, zwrot do <%= loan.returns %>
+</p>
+<p>
+  <%= link_to "Destroy Loan", [loan.book, loan],
+        method: :delete, data: { confirm: "Jesteś pewien?" } %>
+</p>

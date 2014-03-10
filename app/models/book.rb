@@ -1,5 +1,7 @@
 class Book < ActiveRecord::Base
 
+  has_many :loans, dependent: :destroy
+
   mount_uploader :cover, CoverUploader
 
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
