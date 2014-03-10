@@ -572,7 +572,7 @@ Zmieniamy jeden wiersz w widoku *crop.html.erb*:
       html: { id: "coords" } do |f| %>
 ```
 
-## Drugi model: loans (wypożyczenia)
+## Drugi model – Loan (wypożyczenia)
 
 Nie będziemy korzystać z generatora *scaffold*. Dlaczego?
 
