@@ -11,6 +11,9 @@ Linki do dokumentacji Carrierwave:
 * [Wiki](https://github.com/jnicklas/carrierwave/wiki)
 * [Cropping Images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
   RailsCasts \#182
+* A quick and simple image placeholder services:
+  - [placehold](http://placehold.it/)
+  - [placekitten](http://placekitten.com/)
 
 *Simple Form*:
 
