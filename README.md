@@ -5,19 +5,17 @@ i *SimpleForm* oraz biblioteki JavaScript *Isotope*.
 
 Linki do dokumentacji Carrierwave:
 
-* [home](https://github.com/jnicklas/carrierwave) –
+* [Home](https://github.com/jnicklas/carrierwave) –
   classier solution for file uploads for Rails,
   Sinatra and other Ruby web frameworks
-* [wiki](https://github.com/jnicklas/carrierwave/wiki)
-* [application](https://github.com/jnicklas/carrierwave-example-app/blob/master/app/views/users/_form.html.erb) –
-  an example
-* [carrierwave-mongoid](https://github.com/jnicklas/carrierwave-mongoid) –
-  [Mongoid](http://mongoid.org/en/mongoid/index.html) support for CarrierWave
-* [cropping images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
+* [Wiki](https://github.com/jnicklas/carrierwave/wiki)
+* [Cropping Images](http://railscasts.com/episodes/182-cropping-images-revised?view=asciicast) –
   RailsCasts \#182
-* [Carrierwave, Rails 4, and Multiple Uploads](http://stackoverflow.com/questions/19712816/carrierwave-rails-4-and-multiple-uploads)
+* A quick and simple image placeholder services:
+  - [placehold](http://placehold.it/)
+  - [placekitten](http://placekitten.com/)
 
-Simple Form:
+*Simple Form*:
 
 * [README](https://github.com/plataformatec/simple_form)
 
@@ -28,11 +26,16 @@ Dopisujemy do *Gemfile*:
 
 ```ruby
 gem 'rmagick', '~> 2.13.2'
-gem 'carrierwave', '~> 0.9.0'
+gem 'carrierwave', '~> 0.10.0'
+
+gem 'jcrop-rails-v2', '~> 0.9.12.3'
+
 gem 'simple_form', '~> 3.0.1'
+gem 'quiet_assets', '~> 1.0.2'
 ```
 
-i instalujemy oba gemy wykonując:
+odinstalowujemy gem *turbolinks*, instalujemy nowy zestaw gemów
+i uruchamiamy generator *simple_form:install*:
 
 ```sh
 bundle install
@@ -40,16 +43,20 @@ rails generate simple_form:install
 ```
 
 Kilka okładek pobrałem z [Surrealistyczne okładki książek Daniela Mroza](http://booklips.pl/galeria/surrealistyczne-okladki-ksiazek-daniela-mroza/),
-z [Galerii okładek](http://home.agh.edu.pl/~evermind/okladki/galeria_okladek.htm)
-i [GitHub Octodex](http://octodex.github.com/). Obrazki zapisałem w katalogu *public*:
+z [Galerii okładek](http://home.agh.edu.pl/~evermind/okladki/galeria_okladek.htm),
+[GitHub Octodex](http://octodex.github.com/),
+i [Sticky Comics](http://www.stickycomics.com/where-did-you-meet/).
+
+Obrazki zapisałem w katalogu *public*:
 
 * Stanisław Jerzy Lec, Myśli nieuczesane. Wydawnictwo Literackie
 * Stanisław Lem, Cyberiada. Wydawnictwo Literackie
 * John Ronald Reuel Tolkien, Hobbit. Wydawnictwo Iskry
 * John Ronald Reuel Tolkien, Rudy Dżil i jego pies. Wydawnictwo Amber
 * The Kimonoctocat
+* Where did you meet?
 
-Jak to działa? Na konsoli Rails wykonujemy kolejno:
+Jak działa Carrierwave? Na konsoli Rails wykonujemy kolejno:
 
 ```ruby
 class MyUploader < CarrierWave::Uploader::Base
@@ -73,7 +80,8 @@ rails generate scaffold Book author title isbn price:integer
 rake db:migrate
 ```
 
-Generujemy uploader:
+Generujemy uploader dla atrybutu *cover*, który dodajemy
+via *migration* do modelu *Book*:
 
 ```sh
 rails g uploader Cover
@@ -82,7 +90,7 @@ rails g migration add_cover_to_books cover:string
 rake db:migrate
 ```
 
-Dopisujemy uploader do modelu *Book*:
+Wygenerowany uploader dopisujemy do modelu *Book*:
 
 ```ruby
 class Book < ActiveRecord::Base
@@ -90,18 +98,18 @@ class Book < ActiveRecord::Base
 end
 ```
 
-Dopisujemy atrybuty w metodzie *book_params* w kontrolerze *BooksController*:
+Dodatkowe atrybuty, z których będziemy korzystać dopisujemy w metodzie
+*book_params* w kontrolerze *BooksController*:
 
 ```ruby
 # Never trust parameters from the scary internet, only allow the white list through.
 def book_params
   params.require(:book).permit(:author, :title, :isbn, :price,
       :cover, :remove_cover, :cover_cache, :remote_cover_url)
-#  :crop_x, :crop_y, :crop_w, :crop_h  # for Jcrop
 end
 ```
 
-Teraz możemy sprawdzić na konsoli Rails, czy nie zrobiliśmy jakiś błędów:
+Teraz sprawdzimy na konsoli Rails, czy nie zrobiliśmy jakiś błędów:
 
 ```ruby
 b = Book.new
@@ -113,7 +121,7 @@ b.cover.current_path  #=> ".../public/uploads/book/cover/1/kimonotocat.jpg
 b.cover.identifier    #=> "kimonotocat.jpg"
 ```
 
-Fix white list:
+Na koniec odkomentowujemy w *cover_uploader.rb* metodę *extension_white_list*:
 
 ```ruby
 class CoverUploader < CarrierWave::Uploader::Base
@@ -123,7 +131,7 @@ class CoverUploader < CarrierWave::Uploader::Base
 end
 ```
 
-Różne wielkości obrazków:
+I dodajemy dwie wersje obrazków:
 
 ```ruby
 class CoverUploader < CarrierWave::Uploader::Base
@@ -148,9 +156,10 @@ Dokumentacja [CarrierWave::RMagick](http://rdoc.info/github/jnicklas/carrierwave
 
 ## Rails 4
 
-Poprawiamy szablony.
+Zaczynamy od poprawianie szablonów.
 
-Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
+Na początek szablon częściowy *_form.html.erb*,
+w którym skorzystamy z gemu *simple_form*:
 
 ```rhtml
 <%= simple_form_for(@book) do |f| %>
@@ -163,7 +172,7 @@ Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
     </div>
   </div>
   <div class="form-inputs">
-    <%= f.input :cover, label: "Upload local file", as: :file%>
+    <%= f.input :cover, label: "Upload local file", as: :file %>
     <%= f.hidden_field :cover_cache %>
     <%= f.input :remote_cover_url, label: "or input URL" %>
     <% unless @book.new_record? %>
@@ -182,16 +191,14 @@ Zaczynamy od szablonu *_form.html.erb* (korzystamy z gemu *simple_form*):
 <% end %>
 ```
 
-*show.html.erb*:
+W widoku *show.html.erb* dodajemy okładkę:
 
 ```rhtml
+<p id="notice"><%= notice %></p>
 <div class="cover">
   <%= image_tag @book.cover_url if @book.cover? %>
 </div>
 ```
-
-*TODO:* dodać CSS dla elementu *div.cover*.
-
 
 ## Strona główna aplikacji
 
@@ -215,24 +222,15 @@ Bibliotekę dopisujemy do pliku *app/assets/javascripts/application.js*
 //= require jquery
 //= require jquery_ujs
 //= require isotope.pkgd.min
-//= require turbolinks
 ```
 
 Usuwamy też *require_tree* z pliku *app/assets/stylesheets/application.css*
 i dopisujemy *scaffold*:
 
 ```css
- *= require scaffold
+ *= require books
+ *= require scaffolds
  *= require_self
-```
-
-Ponieważ z biblioteki będziemy korzystać tylko via *BooksController*
-pliki z kodem dostosowującym Isotope do strony z listą książek,
-dopisujemy do layoutu aplikacji *app/views/layouts/application.html.erb*:
-
-```rhtml
-<%= stylesheet_link_tag params[:controller] %>
-<%= javascript_include_tag params[:controller] %>
 ```
 
 W samouczku [The Asset Pipeline](http://edgeguides.rubyonrails.org/asset_pipeline.html)
@@ -240,13 +238,14 @@ jest więcej szczegółów na ten temat.
 
 Dopisujemy do pliku *books.css.scss* ([SASS](http://sass-lang.com/)):
 
-```css
+```scss
+$book-background: #F0EAC8;
 body {
   width: 100%;
 }
 .book {
   width: 200px;
-  background-color: #ddd;
+  background-color: $book-background;
   margin-bottom: 20px;
 }
 ```
@@ -264,33 +263,28 @@ i do pliku *books.js*:
     });
   };
   document.addEventListener("DOMContentLoaded", configureIsotope);
-  document.addEventListener("page:load", configureIsotope);
+  // window.addEventListener("load", configureIsotope);
 })();
 ```
 
-*Uwagi:*
-1. Dlaczego to takie skomplikowane?
-Ponieważ Rails korzysta z [Turbolinks](https://github.com/rails/turbolinks).
-Zobacz też [jquery.turbolinks](https://github.com/kossnocorp/jquery.turbolinks).
-2. Usuwamy niepotrzebny plik *books.js.coffee* ([CoffeeScript](http://coffeescript.org/)).
+*Uwaga:* Przy okazji usuwamy niepotrzebny plik
+*books.js.coffee* ([CoffeeScript](http://coffeescript.org/)).
 
 Teraz zajmiemy się widokiem *books/index.html.erb*:
 
 ```rhtml
 <h1>My Books</h1>
-
 <p><%= link_to 'New Book', new_book_path %></p>
 
 <div id="books-container">
+
   <% @books.each do |book| %>
   <div class="book">
     <%= image_tag(book.cover_url(:thumb)) if book.cover? %>
-
     <%= book.author %><br>
     <%= book.title %><br>
     <%= book.isbn %><br>
     <%= book.price %><br>
-
     <div class="book-actions">
       <%= link_to 'Show', book %>
       <%= link_to 'Edit', edit_book_path(book) %>
@@ -299,126 +293,158 @@ Teraz zajmiemy się widokiem *books/index.html.erb*:
   </div>
   <% end %>
 </div>
+
+<%= javascript_include_tag "books" %>
 ```
+
+### Refaktoryzacja widoku *index.html.erb*
+
+Zastępujemy pętlę w widoku *index.html.erb* szablonem częściowym:
+
+```rhtml
+<h1>My Books</h1>
+<p><%= link_to 'New Book', new_book_path %></p>
+<div id="books-container">
+  <%= render partial: 'book', collection: @books %>
+</div>
+<%= javascript_include_tag "books" %>
+```
+
+Następnie tworzymy nowy widok częściowy *_book.html.erb* o zawartości:
+
+```rhtml
+<div class="book">
+  <%= image_tag(book.cover_url(:thumb)) if book.cover? %>
+  <%= book.author %><br>
+  <%= book.title %><br>
+  <%= book.isbn %><br>
+  <%= book.price %><br>
+  <div class="book-actions">
+    <%= link_to 'Show', book %>
+    <%= link_to 'Edit', edit_book_path(book) %>
+    <%= link_to 'Destroy', book, method: :delete, data: { confirm: 'Are you sure?' } %>
+  </div>
+</div>
+```
+
 
 ## Jcrop
 
 * [Jcrop](http://deepliquid.com/content/Jcrop.html),
 * [źródło](https://github.com/tapmodo/Jcrop) (Github)
 
-Zmiany w kodzie. Zaczynamy od routingu, *routes.rb*:
+Bibliotekę Jcrop zainstalujemy w aplikacji Rails
+korzystając z gemu *jcrop-rails-v2* oraz opisu
+z [README](https://github.com/maxd/jcrop-rails-v2)
+(dopisujemy Jcrop w *application.{css,js}*).
 
-```ruby
-Library::Application.routes.draw do
-  resources :books do
-    member do
-      get 'crop'
-    end
-  end
+Widok *crop.html.erb*:
+
+```rhtml
+<h1>Crop Cover</h1>
+
+<%= image_tag @book.cover_url, id: "jcrop_target" %>
+
+<%= simple_form_for @book, html: { id: "coords" } do |f| %>
+<% %w[x y w h].each do |attr| %>
+  <%= f.input "crop_#{attr}" %>
+<% end %>
+  <div class="form-actions">
+    <%= f.submit "Crop" %>
+  </div>
+<% end %>
+<p>
+<%= link_to 'Show', @book %> | <%= link_to 'Back', books_path %></p>
+
+<%= javascript_include_tag 'crop' %>
 ```
 
-Kontroler *books_controller.rb*:
+Dopisujemy do routingu w pliku *routes.rb*:
+
+```ruby
+resources :books do
+  member do
+    get 'crop'
+  end
+end
+```
+
+Dopisujemy do kontrolera *books_controller.rb*
+metodę *crop*:
 
 ```ruby
 class BooksController < ApplicationController
+  # dodajemy :crop
+  before_action :set_book, only: [:show, :edit, :update, :destroy, :crop]
+
   # GET /books/1/crop
-  def show
-    @book = Book.find(params[:id])
+  def crop
   end
 ```
 
-Widok *crop.html.erb*:
+Sprawdzamy czy ten kod działa. W tym celu uruchuchomimy przykład
+[Hello World!](http://deepliquid.com/projects/Jcrop/demos.php?demo=basic).
 
-```rhtml
-    <h1>Crop Cover</h1>
-    <%= image_tag @book.cover_url(:large) %>
+Dopisujemy do pliku *crop.js*:
+
+```js
+(function() {
+  $('#jcrop_target').Jcrop({
+    onChange: showCoords,
+    onSelect: showCoords,
+    minSize: [200, 200]
+  });
+  function showCoords(c) {
+    console.log('x:', c.x, ' y:', c.y, 'w:', c.w, ' h:', c.h);
+  };
+})();
 ```
+
+I wchodzimy na stronę, np. *localhost:3000/books/1/crop**.
+Po kliknięciu w obrazek i przeciągnięciu myszką, powinnien się pojawić
+zaznaczenie prostokątne, a na konsoli powinny być wypisywane aktualne
+współrzędne zaznaczenia.
+
 
 ### Dalsze poprawki
 
-Model *book.rb*:
+W kontrolerze *BooksController.rb* dopisujemy atrybuty
+*crop_{x,y,w,h}* do *book_params*:
+
+```ruby
+def book_params
+  params.require(:book).permit(:author, :title, :isbn, :price,
+      :cover, :remove_cover, :cover_cache, :remote_cover_url,
+      :crop_x, :crop_y, :crop_w, :crop_h)
+end
+```
+
+Atrybuty te dopisujemy też w pliku *book.rb* (tzw. wirtualne atrybuty):
 
 ```ruby
 class Book < ActiveRecord::Base
+  mount_uploader :cover, CoverUploader
+
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
-```
 
-Widok *crop.html.erb*:
-
-```rhtml
-<%= image_tag @book.cover_url, id: "cropbox" %>
-<%= simple_form_for @book, html: { id: "coords", class: "coords form-horizontal" } do |f| %>
-<% %w[x y w h].each do |attr| %>
-  <%= f.input "crop_#{attr}", as: :hidden %>
-<% end %>
-  <div class="form-actions">
-    <%= f.button :submit, t("helpers.links.crop"), class: "btn-primary" %>
-  </div>
-<% end %>
-```
-
-Tłumaczenie:
-
-```yaml
-en:
-  helpers:
-    links:
-      crop: "Crop"
-      tocrop: "click to crop"
-```
-
-*application.js*:
-
-```javascript
-jQuery(function() {
-  $('#cropbox').Jcrop({
-    onChange: showCoords,
-    onSelect: showCoords,
-    onRelease: clearCoords,
-
-    aspectRatio: 1,
-    // http://deepliquid.com/content/Jcrop_Sizing_Issues.html
-    boxWidth: 400,
-    boxHeight: 400
-  });
-});
-
-function showCoords(c) {
-  $('#book_crop_x').val(c.x);
-  $('#book_crop_y').val(c.y);
-  // $('#x2').val(c.x2);
-  // $('#y2').val(c.y2);
-  $('#book_crop_w').val(c.w);
-  $('#book_crop_h').val(c.h);
-};
-
-function clearCoords() {
-  $('#coords .controls').val('');
-};
-```
-
-*book.rb*:
-
-```ruby
-class Book < ActiveRecord::Base
   after_update :crop_cover
-
   def crop_cover
     cover.recreate_versions! if crop_x.present?
   end
+end
 ```
 
-Dodajemy „przycinanie” do kodu *cover_uploader.rb*:
+Przy okazji, po przycięciu układki, uaktualniamy wersje obrazków
+(w naszej aplikacji wersję *thumb*)
+a „przycinanie” obrazków dodajemy do *cover_uploader.rb*:
 
 ```ruby
 class CoverUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
 
-  process :resize_to_fit => [400, 400]
-
   version :thumb do
     process :crop
-    process :resize_to_fill => [60,60]
+    process :resize_to_fit => [200, 400]
   end
 
   def crop
@@ -434,7 +460,56 @@ class CoverUploader < CarrierWave::Uploader::Base
   end
 ```
 
-Przerabiamy wszystkie obrazki wczytane przez Carrierwave:
+**Ważne:** Wyjaśnić jak to działa!
+
+Do widoku *crop.html.erb* dodajemy formularz z atrybutami
+*crop_{x,y,w,h}* użytymi w kodzie powyżej:
+
+```rhtml
+<h1>Crop Cover</h1>
+<%= image_tag @book.cover_url, id: "jcrop_target" %>
+
+<%= simple_form_for @book, html: { id: "coords" } do |f| %>
+<% %w[x y w h].each do |attr| %>
+  <%= f.input "crop_#{attr}" %>
+<% end %>
+  <div class="form-actions">
+    <%= f.submit "Crop" %><!-- powinno przekierowywać na stronę główną -->
+  </div>
+<% end %>
+
+<p><%= link_to 'Show', @book %> | <%= link_to 'Back', books_path %></p>
+<%= javascript_include_tag 'crop' %>
+```
+
+Na koniec, zmieniamy kod w wykorzystanym powyżej w widoku *crop.js*.
+Korzystamy ze zdarzeń *onChange* i *onSelect* aby zapisać współrzędne
+w formularzu w elementach *input*:
+
+```js
+(function() {
+  $('#jcrop_target').Jcrop({
+    onChange: showCoords,
+    onSelect: showCoords,
+    minSize: [200, 200],
+    onRelease: clearCoords,
+    // http://deepliquid.com/content/Jcrop_Sizing_Issues.html
+    boxWidth: 400,
+    boxHeight: 400
+  });
+  function showCoords(c) {
+    $('#book_crop_x').val(c.x);
+    $('#book_crop_y').val(c.y);
+    $('#book_crop_w').val(c.w);
+    $('#book_crop_h').val(c.h);
+  };
+  function clearCoords() {
+    $('#coords input').val('');
+  };
+})();
+```
+
+Powinniśmy też na konsoli Rails, przyciąć wszystkie stare wersje obrazków:
 
 ```ruby
 Book.all.each do |book|
@@ -442,19 +517,215 @@ Book.all.each do |book|
 end
 ```
 
-Przycinanie via klikanie na obrazek okładki na stronie **Edit**, *_form.html.erb*:
+Kończymy zmiany dodaniem linka 'Crop cover' do widoku *show.html.erb*:
 
 ```rhtml
-<div class="controls">
-<% if @book.cover %>
-  <%= image_tag @book.cover_url(:thumb) %>
-  <%= link_to t('.crop', default: t("helpers.links.tocrop")), crop_book_path(@book), class: 'btn' %>
-<% end %>
+<p id="notice"><%= notice %></p>
+<div class="cover">
+  <%= image_tag @book.cover_url if @book.cover? %>
+</div>
+
+<div class="form-actions">
+  <% if @book.cover %>
+  <%= link_to 'Crop cover', crop_book_path(@book) %>
+  <% end %>
 </div>
 ```
-Po edycji i dodaniu nowej książki przechodzimy na stronę główną, a nie na stronę „Show Book”.
 
-JTZ? Poprawić kod metod `create` i `update` kontrolera.
+KONIEC.
+
+
+## powinno przekierowywać na stronę główną…
+
+*config/routes.rb*:
+
+```ruby
+  resources :books do
+    member do
+      get 'crop'
+      patch 'update_crop'
+    end
+  end
+```
+
+Dopisujemy do kodu kontrolera:
+
+```ruby
+class BooksController < ApplicationController
+  before_action :set_book, only: [:show, :edit, :update, :destroy, :crop, :update_crop]
+  # GET /books/1/crop
+  def crop
+  end
+  # PATCH/PUT /books/1/update_crop
+  def update_crop
+    respond_to do |format|
+      if @book.update(book_params)
+        format.html { redirect_to books_url, notice: 'Cover was successfully updated.' }
+      else
+        format.html { render action: 'edit' }
+      end
+    end
+  end
+```
+
+Zmieniamy jeden wiersz w widoku *crop.html.erb*:
+
+```rhtml
+<%= simple_form_for @book, url: update_crop_book_path(@book),
+      html: { id: "coords" } do |f| %>
+```
+
+## Drugi model – Loan (wypożyczenia)
+
+Nie będziemy korzystać z generatora *scaffold*. Dlaczego?
+
+*Loan* krok po kroku:
+
+```sh
+rails generate model Loan lender:string returns:date book:references
+      create    db/migrate/20140308184718_create_loans.rb
+      create    app/models/loan.rb
+rake db:migrate
+```
+
+Dopisujemy powiązania między modelami:
+
+```ruby
+belongs_to :book                       # w modelu Loan
+has_many :loans, dependent: :destroy   #          Book
+```
+
+Zamieniamy *resources* routing na zagnieżdżony:
+
+```ruby
+resources :books do
+  resources :loans
+  member do
+    get 'crop'
+    patch 'update_crop'
+  end
+end
+```
+i generujemy kontroler dla wypożyczeń:
+
+```sh
+rails generate controller Loans
+```
+
+Wypożyczenia będziemy dodawać i wypisywać w widoku *articles/show*:
+
+```rhtml
+<h2>Wypożyczenia</h2>
+<% @book.loans.each do |loan| %>
+  <p>
+    <%= loan.lender %>, zwrot do <%= loan.returns %>
+  </p>
+<% end %>
+
+<h3>Nowe wypożyczenie</h3>
+<%= simple_form_for([@book, @book.loans.build]) do |f| %>
+  <div class="form-inputs">
+    <%= f.input :lender %>
+    <%= f.input :returns %>
+  </div>
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>
+
+<%= link_to 'Edit', edit_book_path(@book) %> |
+<%= link_to 'Back', books_path %>
+```
+
+Po kliknięciu w przycisk *submit* jest wykonywana akcja
+*create* kontrolera *LoansController*:
+
+```ruby
+class LoansController < ApplicationController
+  def create
+    @book = Book.find(params[:book_id])
+    @loan = @book.loans.create(loan_params)
+    redirect_to book_path(@book)
+  end
+  def destroy
+    @book = Book.find(params[:book_id])
+    @loan = @book.loans.find(params[:id])
+    @loan.destroy
+    redirect_to book_path(@book)
+  end
+
+  private
+  def loan_params
+    params.require(:loan).permit(:lender, :returns)
+  end
+end
+```
+
+**Uwagi:**
+
+1. Zagnieżdżenie zasobów ⇒ *book_id* + *:id*.
+2. Walidacja jest trikowa! Wyjaśnić dlaczego?
+
+
+### Obowiązkowa refaktoryzacja
+
+Widok zawiera za dużo kodu. W widoku *articles/show*
+wydzielimy dwa widoki częściowe:
+
+```rhtml
+<h2>Wypożyczenia</h2>
+<%= render @book.loans %>
+<h3>Nowe wypożyczenie</h3>
+<%= render "loans/form" %>
+```
+
+*loans/_loan.html.erb*:
+
+```rhtml
+<p>
+  <%= loan.lender %>, zwrot do <%= loan.returns %>
+</p>
+```
+
+i *loans/_form.html.erb*:
+
+```rhtml
+<%= simple_form_for([@book, @book.loans.build]) do |f| %>
+  <div class="form-inputs">
+    <%= f.input :lender %>
+    <%= f.input :returns %>
+  </div>
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+<% end %>
+```
+
+### Usuwanie wypożyczeń
+
+Dopisujemy link *Usuń wypożyczenie* do widoku
+
+```rhtml
+<p>
+  <%= link_to "Destroy Loan", [loan.book, loan],
+        method: :delete, data: { confirm: "Jesteś pewien?" } %>
+</p>
+```
+Metodę *destroy* do kontrolera *LoansControllers*
+dodaliśmy wcześniej.
+
+
+## Basic Authentication
+
+Dopisujemy do obu kontrolerów:
+
+```ruby
+class BooksController < ApplicationController
+   http_basic_authenticate_with name: "admin", password: "sekret", except: [:index, :show]
+
+class LoansController < ApplicationController
+   http_basic_authenticate_with name: "admin", password: "sekret", only: :destroy
+```
 
 
 ## ISBN API
@@ -462,15 +733,14 @@ JTZ? Poprawić kod metod `create` i `update` kontrolera.
 Dodać możliwość korzystania z ISBN. Zobacz:
 
 * http://stackoverflow.com/questions/1297700/what-is-the-most-complete-free-isbn-api
-* http://pastie.org/589354
-* http://isbndb.com/docs/api/51-books.html
+* http://isbndb.com, http://isbndb.com/api/v2/docs
 * https://developers.google.com/books/docs/getting-started?hl=pl
 * https://developers.google.com/books/docs/v1/getting_started?hl=pl
 
 
-## Różne rzeczy
+## Odpluskwianie kodu
 
-Debugging views:
+1. W widoku dodajemy kod podobny do tego:
 
 ```rhtml
 <div style="clear: both">
@@ -479,15 +749,15 @@ Debugging views:
 ```
 
 
-## TODO
+## Running app in development
 
 * Ruby version: **2.1.0**, gemset: **my_books**
-* Rails version: **4.0.3**
 
-* System dependencies
-* Configuration
+* Rails version: **4.1.0.rc1**
+
+* System dependencies: ImageMagick, SQLite
+
 * Database creation
-* Database initialization
-* How to run the test suite
-* Services (job queues, cache servers, search engines, etc.)
-* Deployment instructions
+  ```
+  rake db:migrate
+  ```

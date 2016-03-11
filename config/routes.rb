@@ -1,5 +1,13 @@
 MyBooks::Application.routes.draw do
-  resources :books
+  resources :books do
+    resources :loans
+
+    member do
+      get 'crop'
+      patch 'update_crop'
+    end
+  end
+
   root 'books#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
